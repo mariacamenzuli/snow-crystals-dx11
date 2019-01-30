@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{BEC7B7E9-E562-4507-B4B4-8AE604B842EB}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Engine</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <ProjectName>ProceduralLevelGenerator</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y "$(ProjectDir)config.yml"  "$(OutDir)"</Command>
+    </PostBuildEvent>
+    <FxCompile>
+      <ObjectFileOutput>$(OutDir)Resources/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="ApplicationConfig.cpp" />
+    <ClCompile Include="Rendering\Camera.cpp" />
+    <ClCompile Include="3D Components\Models\CubeModel.cpp" />
+    <ClCompile Include="Rendering\D3D11Renderer.cpp" />
+    <ClCompile Include="Rendering\Shaders\DepthShader.cpp" />
+    <ClCompile Include="Simulation\GeneratedLevelScene.cpp" />
+    <ClCompile Include="Rendering\Shaders\LightShader.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="3D Components\Material.cpp" />
+    <ClCompile Include="Util\MetricsTracker.cpp" />
+    <ClCompile Include="Simulation\ModelLoader.cpp" />
+    <ClCompile Include="3D Components\Models\ObjModel.cpp" />
+    <ClCompile Include="3D Components\PointLight.cpp" />
+    <ClCompile Include="Rendering\RenderTargetTextureCube.cpp" />
+    <ClCompile Include="3D Components\SceneObject.cpp" />
+    <ClCompile Include="Rendering\Texture.cpp" />
+    <ClCompile Include="Util\UserInputReader.cpp" />
+    <ClCompile Include="Util\Win32RenderingWindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ApplicationConfig.h" />
+    <ClInclude Include="Rendering\Camera.h" />
+    <ClInclude Include="3D Components\Models\CubeModel.h" />
+    <ClInclude Include="Rendering\D3D11Renderer.h" />
+    <ClInclude Include="Rendering\Shaders\DepthShader.h" />
+    <ClInclude Include="Util\FileReader.h" />
+    <ClInclude Include="Simulation\GeneratedLevelScene.h" />
+    <ClInclude Include="Rendering\Shaders\LightShader.h" />
+    <ClInclude Include="3D Components\Material.h" />
+    <ClInclude Include="Util\MetricsTracker.h" />
+    <ClInclude Include="3D Components\Models\Model.h" />
+    <ClInclude Include="Simulation\ModelLoader.h" />
+    <ClInclude Include="3D Components\Models\ObjModel.h" />
+    <ClInclude Include="3D Components\PointLight.h" />
+    <ClInclude Include="Rendering\RenderTargetTextureCube.h" />
+    <ClInclude Include="3D Components\Scene.h" />
+    <ClInclude Include="3D Components\SceneObject.h" />
+    <ClInclude Include="Rendering\Texture.h" />
+    <ClInclude Include="Util\UserInputReader.h" />
+    <ClInclude Include="Util\Win32RenderingWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Rendering\Shaders\depth-pixel.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">calculateDepth</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Rendering\Shaders\depth-vertex.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">transformToScreenSpace</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Rendering\Shaders\light-pixel.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">colorPixel</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="Rendering\Shaders\light-vertex.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">transformToScreenSpace</EntryPointName>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="config.yml" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

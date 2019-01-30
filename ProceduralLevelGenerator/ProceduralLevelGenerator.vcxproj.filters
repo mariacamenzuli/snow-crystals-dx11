@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{acebe109-b59a-4ab9-a79a-5dbe78fa680f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Util">
+      <UniqueIdentifier>{ad876616-bb5d-4e37-91b8-f0780475d74a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Util">
+      <UniqueIdentifier>{6f9ed0d1-1630-43fc-9697-7b0ac84a73c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Rendering">
+      <UniqueIdentifier>{ccd184a4-d958-47cc-ae85-75a7074715b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rendering">
+      <UniqueIdentifier>{37d6bc96-5cc8-48bb-82b9-bcc81174f1c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Rendering\Shaders">
+      <UniqueIdentifier>{7c71f968-01c1-41c9-a952-d130f6b4a0dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rendering\Shaders">
+      <UniqueIdentifier>{3a6a9707-267e-4cef-b815-26434b8c911c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config Files">
+      <UniqueIdentifier>{4ee8ca85-afa1-4b36-a3a7-7445d1fc035e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Simulation">
+      <UniqueIdentifier>{9c8e13b3-ac97-484f-ad58-6533bb485223}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Simulation">
+      <UniqueIdentifier>{838e49b9-70bb-424d-b40f-4c459267e121}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3D Components">
+      <UniqueIdentifier>{caba16b6-19c2-4da7-9dd5-36b5e95f1792}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\3D Components">
+      <UniqueIdentifier>{3fbf9537-aa61-44fb-8b85-88b2ab9fcf6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3D Components\Models">
+      <UniqueIdentifier>{5d24965d-e90d-41bc-bb8c-5face1ae8800}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\3D Components\Models">
+      <UniqueIdentifier>{7d73ac9f-3cbc-4b38-aeab-2b940ae66979}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ApplicationConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3D Components\Material.cpp">
+      <Filter>Source Files\3D Components</Filter>
+    </ClCompile>
+    <ClCompile Include="3D Components\PointLight.cpp">
+      <Filter>Source Files\3D Components</Filter>
+    </ClCompile>
+    <ClCompile Include="3D Components\SceneObject.cpp">
+      <Filter>Source Files\3D Components</Filter>
+    </ClCompile>
+    <ClCompile Include="3D Components\Models\CubeModel.cpp">
+      <Filter>Source Files\3D Components\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="3D Components\Models\ObjModel.cpp">
+      <Filter>Source Files\3D Components\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Util\MetricsTracker.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Util\UserInputReader.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Util\Win32RenderingWindow.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\ModelLoader.cpp">
+      <Filter>Source Files\Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\RenderTargetTextureCube.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\D3D11Renderer.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shaders\LightShader.cpp">
+      <Filter>Source Files\Rendering\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shaders\DepthShader.cpp">
+      <Filter>Source Files\Rendering\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\GeneratedLevelScene.cpp">
+      <Filter>Source Files\Simulation</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ApplicationConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3D Components\Material.h">
+      <Filter>Header Files\3D Components</Filter>
+    </ClInclude>
+    <ClInclude Include="3D Components\PointLight.h">
+      <Filter>Header Files\3D Components</Filter>
+    </ClInclude>
+    <ClInclude Include="3D Components\Scene.h">
+      <Filter>Header Files\3D Components</Filter>
+    </ClInclude>
+    <ClInclude Include="3D Components\SceneObject.h">
+      <Filter>Header Files\3D Components</Filter>
+    </ClInclude>
+    <ClInclude Include="3D Components\Models\CubeModel.h">
+      <Filter>Header Files\3D Components\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="3D Components\Models\Model.h">
+      <Filter>Header Files\3D Components\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="3D Components\Models\ObjModel.h">
+      <Filter>Header Files\3D Components\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\FileReader.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\MetricsTracker.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\UserInputReader.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\Win32RenderingWindow.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\ModelLoader.h">
+      <Filter>Header Files\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\RenderTargetTextureCube.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\D3D11Renderer.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shaders\LightShader.h">
+      <Filter>Header Files\Rendering\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shaders\DepthShader.h">
+      <Filter>Header Files\Rendering\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\GeneratedLevelScene.h">
+      <Filter>Header Files\Simulation</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Rendering\Shaders\depth-pixel.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Rendering\Shaders\depth-vertex.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Rendering\Shaders\light-pixel.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Rendering\Shaders\light-vertex.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="config.yml">
+      <Filter>Config Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

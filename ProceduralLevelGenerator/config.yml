@@ -1,0 +1,9 @@
+# if false, an 800 x 600 window will be used
+fullscreen_enabled: false
+
+vsync_enabled: true
+
+screen_depth: 1000.0
+screen_near: 0.1
+
+shadowmap_size: 1080
