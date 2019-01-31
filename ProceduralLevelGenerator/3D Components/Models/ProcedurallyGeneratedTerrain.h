@@ -13,6 +13,8 @@ public:
     unsigned long* getIndices() override;
     std::vector<MaterialIndexRange> getMaterialIndexRanges() override;
 
+    void mutate();
+
 private:
     struct HeightMapPoint {
         float x, y, z;
@@ -27,5 +29,6 @@ private:
     std::vector<MaterialIndexRange> materialIndexRanges;
 
     void calculateHeightMapNormals();
+    void generateVerticesAndIndicesFromHeightMap();
 };
 

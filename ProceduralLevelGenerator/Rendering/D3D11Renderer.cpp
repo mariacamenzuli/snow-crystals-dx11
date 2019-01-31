@@ -174,6 +174,24 @@ void D3D11Renderer::writeCurrentShadowMapToDds() {
     shadowMap.saveToFile(deviceContext.Get());
 }
 
+void D3D11Renderer::updateBufferData() {
+    auto sceneVertices = getAllVertices(scene);
+
+    D3D11_MAPPED_SUBRESOURCE vertexBufferMappedResource;
+    ZeroMemory(&vertexBufferMappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+    deviceContext->Map(vertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &vertexBufferMappedResource);
+    memcpy(vertexBufferMappedResource.pData, sceneVertices.data(), sizeof(Model::Vertex) * sceneVertices.size());
+    deviceContext->Unmap(vertexBuffer.Get(), 0);
+
+    auto sceneIndices = getAllIndices(scene);
+    
+    D3D11_MAPPED_SUBRESOURCE indexBufferappedResource;
+    ZeroMemory(&indexBufferappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+    deviceContext->Map(indexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &indexBufferappedResource);
+    memcpy(indexBufferappedResource.pData, sceneIndices.data(), sizeof(unsigned long) * sceneIndices.size());
+    deviceContext->Unmap(indexBuffer.Get(), 0);
+}
+
 D3D11Renderer::PhysicalDeviceDescriptor D3D11Renderer::queryPhysicalDeviceDescriptors() {
     HRESULT result;
 
@@ -406,10 +424,10 @@ void D3D11Renderer::setupVertexAndIndexBuffers() {
     auto sceneVertices = getAllVertices(scene);
 
     // Set up the description of the static vertex buffer.
-    vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
     vertexBufferDesc.ByteWidth = sizeof(Model::Vertex) * sceneVertices.size();
     vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    vertexBufferDesc.CPUAccessFlags = 0;
+    vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     vertexBufferDesc.MiscFlags = 0;
     vertexBufferDesc.StructureByteStride = 0;
 
@@ -432,10 +450,10 @@ void D3D11Renderer::setupVertexAndIndexBuffers() {
     auto sceneIndices = getAllIndices(scene);
 
     // Set up the description of the static index buffer.
-    indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    indexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
     indexBufferDesc.ByteWidth = sizeof(unsigned long) * sceneIndices.size();
     indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    indexBufferDesc.CPUAccessFlags = 0;
+    indexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     indexBufferDesc.MiscFlags = 0;
     indexBufferDesc.StructureByteStride = 0;
 

@@ -22,6 +22,7 @@ Model* ModelLoader::getModel(ModelId modelId) {
     }
 }
 
-Model* ModelLoader::createProceduralTerrain(int height, int width) {
-    return modelMap.insert(std::make_pair(ModelId::PROCEDURAL_TERRAIN, std::make_unique<ProcedurallyGeneratedTerrain>(ProcedurallyGeneratedTerrain(height, width)))).first->second.get();
+ProcedurallyGeneratedTerrain* ModelLoader::createProceduralTerrain(int height, int width) {
+    auto terrain = modelMap.insert(std::make_pair(ModelId::PROCEDURAL_TERRAIN, std::make_unique<ProcedurallyGeneratedTerrain>(ProcedurallyGeneratedTerrain(height, width)))).first->second.get();
+    return dynamic_cast<ProcedurallyGeneratedTerrain*>(terrain);
 }
