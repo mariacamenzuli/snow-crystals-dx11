@@ -2,6 +2,7 @@
 
 #include "../3D Components/Scene.h"
 #include "ModelLoader.h"
+#include "../Util/UserInputReader.h"
 
 class GeneratedLevelScene : public Scene {
 public:

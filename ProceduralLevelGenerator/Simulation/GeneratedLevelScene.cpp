@@ -28,5 +28,5 @@ PointLight* GeneratedLevelScene::getPointLight() {
 }
 
 void GeneratedLevelScene::update(float deltaTime) {
-    // no-op
+    //no-op
 }

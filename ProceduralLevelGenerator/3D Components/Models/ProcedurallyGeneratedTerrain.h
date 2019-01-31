@@ -19,9 +19,13 @@ private:
         float nx, ny, nz;
     };
 
+    int width;
+    int height;
     std::vector<HeightMapPoint> heightMap;
     std::vector<Vertex> vertices;
     std::vector<unsigned long> indices;
     std::vector<MaterialIndexRange> materialIndexRanges;
+
+    void calculateHeightMapNormals();
 };
 
