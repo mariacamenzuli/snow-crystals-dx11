@@ -1,6 +1,7 @@
 #include "ModelLoader.h"
 #include "../3D Components/Models/ObjModel.h"
 #include "../3D Components/Models/CubeModel.h"
+#include "../3D Components/Models/ProcedurallyGeneratedTerrain.h"
 
 ModelLoader::ModelLoader() = default;
 
@@ -19,4 +20,8 @@ Model* ModelLoader::getModel(ModelId modelId) {
             throw std::runtime_error("Tried to obtain reference to an unknown model");
         }
     }
+}
+
+Model* ModelLoader::createProceduralTerrain(int height, int width) {
+    return modelMap.insert(std::make_pair(ModelId::PROCEDURAL_TERRAIN, std::make_unique<ProcedurallyGeneratedTerrain>(ProcedurallyGeneratedTerrain(height, width)))).first->second.get();
 }

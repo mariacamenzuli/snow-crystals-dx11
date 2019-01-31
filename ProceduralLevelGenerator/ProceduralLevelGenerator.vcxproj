@@ -91,6 +91,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationConfig.cpp" />
+    <ClCompile Include="3D Components\Models\ProcedurallyGeneratedTerrain.cpp" />
     <ClCompile Include="Rendering\Camera.cpp" />
     <ClCompile Include="3D Components\Models\CubeModel.cpp" />
     <ClCompile Include="Rendering\D3D11Renderer.cpp" />
@@ -111,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationConfig.h" />
+    <ClInclude Include="3D Components\Models\ProcedurallyGeneratedTerrain.h" />
     <ClInclude Include="Rendering\Camera.h" />
     <ClInclude Include="3D Components\Models\CubeModel.h" />
     <ClInclude Include="Rendering\D3D11Renderer.h" />

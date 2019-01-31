@@ -11,10 +11,12 @@ public:
     ~ModelLoader();
 
     enum class ModelId {
-        CUBE
+        CUBE,
+        PROCEDURAL_TERRAIN
     };
 
     Model* getModel(ModelId modelId);
+    Model* createProceduralTerrain(int height, int width);
 
 private:
     std::map<ModelId, std::unique_ptr<Model>> modelMap;
