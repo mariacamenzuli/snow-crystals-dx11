@@ -16,6 +16,8 @@ Model* ModelLoader::getModel(ModelId modelId) {
         switch (modelId) {
         case ModelId::CUBE:
             return modelMap.insert(std::make_pair(modelId, std::make_unique<CubeModel>(CubeModel(cubeMaterial)))).first->second.get();
+        case ModelId::HEXAGON:
+            return modelMap.insert(std::make_pair(modelId, std::make_unique<ObjModel>(ObjModel::loadFromFile("Resources/Models/hexagon.obj")))).first->second.get();
         default:
             throw std::runtime_error("Tried to obtain reference to an unknown model");
         }

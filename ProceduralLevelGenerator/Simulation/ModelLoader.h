@@ -12,7 +12,8 @@ public:
 
     enum class ModelId {
         CUBE,
-        PROCEDURAL_TERRAIN
+        PROCEDURAL_TERRAIN,
+        HEXAGON
     };
 
     Model* getModel(ModelId modelId);

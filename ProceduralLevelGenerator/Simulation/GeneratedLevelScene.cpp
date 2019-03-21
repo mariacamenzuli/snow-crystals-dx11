@@ -7,8 +7,26 @@ GeneratedLevelScene::GeneratedLevelScene() : pointLight(D3DXVECTOR4(1.0f, 1.0f, 
     auto world = rootSceneObject->attachChild(std::make_unique<SceneObject>(), "world");
 
     const auto terrainModel = modelLoader.createProceduralTerrain(100, 100);
-    auto cube = world->attachChild(std::make_unique<SceneObject>(terrainModel), "terrain");
-    cube->translate(-50.0f, -9.0f, -50.0f);
+    auto terrain = world->attachChild(std::make_unique<SceneObject>(terrainModel), "terrain");
+    terrain->translate(-50.0f, -9.0f, -50.0f);
+
+    const auto hexagonModel = modelLoader.getModel(ModelLoader::ModelId::HEXAGON);
+    
+    auto cellGrid = world->attachChild(std::make_unique<SceneObject>(), "cells");
+
+    for (int y = 0; y < CELL_CUBE_WIDTH; y++) {
+        int t = y % 2;
+        for (int x = 0; x < CELL_CUBE_WIDTH; x++) {
+            auto hexagonCell = cellGrid->attachChild(std::make_unique<SceneObject>(hexagonModel));
+            hexagonCell->scale(12.0f, 12.0f, 12.0f);
+            hexagonCell->rotateY(-0.23f);
+            hexagonCell->rotateZ(1.5708f);
+            hexagonCell->translate(x * 2 + t, y * 1.75, 0.0f);
+
+            cells[x][y] = { CellState::AIR, hexagonCell };
+            cells[x][y].kill();
+        }
+    }
 
     pointLight.translate(0.0f, 20.0f, 0.0f);
 }

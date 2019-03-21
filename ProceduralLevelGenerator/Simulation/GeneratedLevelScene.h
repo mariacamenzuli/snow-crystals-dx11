@@ -14,7 +14,29 @@ public:
     PointLight* getPointLight() override;
     void update(float deltaTime);
 private:
+    enum class CellState {
+        ICE, AIR
+    };
+
+    struct Cell {
+        CellState state;
+        SceneObject* sceneObject;
+
+        void kill() {
+            state = CellState::AIR;
+            sceneObject->hide();
+        }
+
+        void spawn() {
+            state = CellState::ICE;
+            sceneObject->show();
+        }
+    };
+
+    const static int CELL_CUBE_WIDTH = 20;
+
     ModelLoader modelLoader;
     std::unique_ptr<SceneObject> rootSceneObject;
     PointLight pointLight;
+    Cell cells[CELL_CUBE_WIDTH][CELL_CUBE_WIDTH];
 };
