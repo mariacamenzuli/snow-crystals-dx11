@@ -15,28 +15,58 @@ public:
     void update(float deltaTime);
 private:
     enum class CellState {
-        ICE, AIR
+        ICE,
+        AIR
     };
 
     struct Cell {
         CellState state;
         SceneObject* sceneObject;
+        float value; // water vapor
+        float receptiveValue;
+        float nonReceptiveValue;
+        int x;
+        int y;
+        std::vector<Cell*> neighbours;
 
-        void kill() {
+        Cell() = default;
+
+        Cell(int x, int y, CellState state, SceneObject* sceneObject, float value)
+            : x(x),
+              y(y),
+              state(state),
+              sceneObject(sceneObject),
+              value(value),
+              receptiveValue(0.0f),
+              nonReceptiveValue(value) {
+            if (state == CellState::AIR) {
+                sceneObject->hide();
+            }
+        }
+
+        void thaw() {
             state = CellState::AIR;
             sceneObject->hide();
         }
 
-        void spawn() {
+        void freeze() {
             state = CellState::ICE;
             sceneObject->show();
         }
     };
 
-    const static int CELL_CUBE_WIDTH = 20;
+    const static int HEXAGON_LATTICE_WIDTH = 40;
+    const static int HEXAGON_LATTICE_HEIGHT = 40;
+    constexpr const static float ICE = 1.0f;
+    constexpr const static float ALPHA = 1.0f;
+    constexpr const static float BETA = 0.4f;
+    constexpr const static float GAMMA = 0.1f;
 
     ModelLoader modelLoader;
     std::unique_ptr<SceneObject> rootSceneObject;
     PointLight pointLight;
-    Cell cells[CELL_CUBE_WIDTH][CELL_CUBE_WIDTH];
+    Cell cells[HEXAGON_LATTICE_WIDTH][HEXAGON_LATTICE_HEIGHT];
+    std::vector<Cell*> ice;
+    std::vector<Cell*> boundary;
+    int updateCount = 0;
 };

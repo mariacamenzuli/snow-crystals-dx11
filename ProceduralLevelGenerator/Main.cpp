@@ -121,10 +121,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
         d3D11Renderer.setCamera(&camera);
 
         // set camera initial position
-        camera.yaw(-1.5708f);
+        // camera.yaw(-1.5708f);
         camera.moveStraight(-275.0f);
         camera.moveVertical(50.0f);
-        camera.pitch(0.174533f);
+        // camera.pitch(0.174533f);
         UserInputReader userInput(hInstance, renderingWindow.getWindowHandle());
 
         renderingWindow.showWindow();
