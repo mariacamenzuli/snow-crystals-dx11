@@ -17,7 +17,6 @@ struct VertexDescriptor {
     float2 tex : TEXCOORD0;
 
     // instance data
-    //row_major float4x4 world : WORLD;
     float4 instancePosition : INSTANCE_POSITION;
     uint instanceId : SV_InstanceID;
 };
