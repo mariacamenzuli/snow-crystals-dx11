@@ -7,8 +7,10 @@ GeneratedLevelScene::GeneratedLevelScene() : pointLight(D3DXVECTOR4(1.0f, 1.0f, 
 
     const auto cubeModel = modelLoader.getModel(ModelLoader::ModelId::CUBE);
     auto background = world->attachChild(std::make_unique<SceneObject>(cubeModel), "background");
+    cubeModel->addInstance({ {12.0f, 12.0f, 12.0f} });
+    cubeModel->addInstance({ {12.0f, 12.0f, 12.0f} });
     background->scale(100.0f, 1.0f, 100.f);
-    background->translate(0.0f, -9.0f, 0.0f);
+    background->translate(0.0f, -4.0f, 0.0f);
 
     const auto hexagonModel = modelLoader.getModel(ModelLoader::ModelId::HEXAGON);
     

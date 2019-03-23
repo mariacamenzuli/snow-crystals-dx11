@@ -141,7 +141,7 @@ void LightShader::setupVertexShader(ID3D11Device* device) {
         throw std::runtime_error("Failed to create light shader. Creation of vertex shader failed.");
     }
 
-    D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
+    D3D11_INPUT_ELEMENT_DESC polygonLayout[4];
 
     polygonLayout[0].SemanticName = "POSITION";
     polygonLayout[0].SemanticIndex = 0;
@@ -166,6 +166,14 @@ void LightShader::setupVertexShader(ID3D11Device* device) {
     polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
     polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
     polygonLayout[2].InstanceDataStepRate = 0;
+
+    polygonLayout[3].SemanticName = "INSTANCE_POSITION";
+    polygonLayout[3].SemanticIndex = 0;
+    polygonLayout[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    polygonLayout[3].InputSlot = 1;
+    polygonLayout[3].AlignedByteOffset = 0;
+    polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
+    polygonLayout[3].InstanceDataStepRate = 1;
 
     // Get a count of the elements in the layout.
     unsigned int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);

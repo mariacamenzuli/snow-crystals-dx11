@@ -153,6 +153,18 @@ std::vector<Model::MaterialIndexRange> ObjModel::getMaterialIndexRanges() {
     return materialIndexRanges;
 }
 
+int ObjModel::getInstanceCount() {
+    return instances.size();
+}
+
+bool ObjModel::isInstanced() {
+    return !instances.empty();
+}
+
+void ObjModel::addInstance(Instance instance) {
+    instances.push_back(instance);
+}
+
 bool ObjModel::lineStartsWith(std::string text, std::string prefix) {
     return text.find(prefix) == 0;
 }

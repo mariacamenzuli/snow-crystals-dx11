@@ -139,7 +139,12 @@ void D3D11Renderer::renderFrame() {
                                                      isTextured);
     
                     const auto indicesToDrawCount = (materialIndexRange.endInclusive + 1) - materialIndexRange.startInclusive;
-                    deviceContext->DrawIndexed(indicesToDrawCount, indexStartLocation, vertexStartLocation);
+
+                    if (sceneObject->getModel()->isInstanced()) {
+                        deviceContext->DrawIndexedInstanced(indicesToDrawCount, sceneObject->getModel()->getInstanceCount(), indexStartLocation, vertexStartLocation, 0); //todo: fix instance pointer
+                    } else {
+                        deviceContext->DrawIndexed(indicesToDrawCount, indexStartLocation, vertexStartLocation);
+                    }
     
                     indexStartLocation = indexStartLocation + indicesToDrawCount;
                 }
@@ -290,7 +295,7 @@ void D3D11Renderer::createSwapChainAndDevice(HWND windowHandle) {
         nullptr,
         D3D_DRIVER_TYPE_HARDWARE,
         nullptr,
-        0,
+        D3D11_CREATE_DEVICE_DEBUG,
         &featureLevel,
         1,
         D3D11_SDK_VERSION,
@@ -399,8 +404,8 @@ void D3D11Renderer::setupViewport() {
 }
 
 void D3D11Renderer::setupVertexAndIndexBuffers() {
-    D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
-    D3D11_SUBRESOURCE_DATA vertexData, indexData;
+    D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc, instanceBufferDesc;
+    D3D11_SUBRESOURCE_DATA vertexData, indexData, instanceData;
     HRESULT result;
 
     auto sceneVertices = getAllVertices(scene);
@@ -424,10 +429,35 @@ void D3D11Renderer::setupVertexAndIndexBuffers() {
         throw std::runtime_error("Failed to create vertex buffer for scene.");
     }
 
-    // Bind the vertex buffer to the input-assembler stage.
-    unsigned int stride = sizeof(Model::Vertex);
-    unsigned int offset = 0;
-    deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
+    // Set up the description of the instance buffer.
+    instanceBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    instanceBufferDesc.ByteWidth = sizeof(Model::Instance) * 3; //todo INSTANCE COUNT
+    instanceBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    instanceBufferDesc.CPUAccessFlags = 0;
+    instanceBufferDesc.MiscFlags = 0;
+    instanceBufferDesc.StructureByteStride = 0;
+
+    auto instances = new Model::Instance[3]; //todo
+    instances[0].position = D3DXVECTOR3(0.0f, -4.0f, 0.0f);
+    instances[1].position = D3DXVECTOR3(0.0f, 4.0f, 0.0f);
+    instances[2].position = D3DXVECTOR3(-6.0f, 0.0f, 0.0f);
+
+    // Give the subresource structure a pointer to the instance data.
+    instanceData.pSysMem = instances;
+    instanceData.SysMemPitch = 0;
+    instanceData.SysMemSlicePitch = 0;
+
+    // Create the instance buffer.
+    result = device->CreateBuffer(&instanceBufferDesc, &instanceData, &instanceBuffer);
+    if (FAILED(result)) {
+        throw std::runtime_error("Failed to create instance buffer for scene.");
+    }
+
+    // Bind the vertex and instance buffers to the input-assembler stage.
+    unsigned int stride[2] = { sizeof(Model::Vertex), sizeof(Model::Instance) };
+    unsigned int offset[2] = { 0,0 };
+    ID3D11Buffer* bufferPointers[2] = { vertexBuffer.Get(), instanceBuffer.Get() };
+    deviceContext->IASetVertexBuffers(0, 2, bufferPointers, stride, offset);
 
     auto sceneIndices = getAllIndices(scene);
 
@@ -474,7 +504,9 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
     while (!toVisit.empty()) {
         SceneObject* sceneObject = toVisit.top();
         toVisit.pop();
-    
+
+        //todo: shadow map with instancing???
+
         if (sceneObject->getModel() != nullptr) {
             if (sceneObject->isVisible()) {
                 // +VE X

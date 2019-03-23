@@ -78,6 +78,7 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
     Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> instanceBuffer;
 
     D3DXMATRIX projectionMatrix;
     LightShader lightShader;

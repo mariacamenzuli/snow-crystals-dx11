@@ -212,3 +212,15 @@ unsigned long* CubeModel::getIndices() {
 std::vector<Model::MaterialIndexRange> CubeModel::getMaterialIndexRanges() {
     return materialIndexRanges;
 }
+
+int CubeModel::getInstanceCount() {
+    return instances.size();
+}
+
+bool CubeModel::isInstanced() {
+    return !instances.empty();
+}
+
+void CubeModel::addInstance(Instance instance) {
+    instances.push_back(instance);
+}

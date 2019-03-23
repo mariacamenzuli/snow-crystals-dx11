@@ -22,11 +22,18 @@ public:
         }
     };
 
+    struct Instance {
+        D3DXVECTOR3 position;
+    };
+
     virtual ~Model() = default;;
 
     virtual int getVertexCount() = 0;
     virtual int getIndexCount() = 0;
+    virtual int getInstanceCount() = 0;
     virtual Vertex* getVertices() = 0;
     virtual unsigned long* getIndices() = 0;
     virtual std::vector<MaterialIndexRange> getMaterialIndexRanges() = 0;
+    virtual bool isInstanced() = 0;
+    virtual void addInstance(Instance instance) = 0;
 };

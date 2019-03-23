@@ -15,6 +15,11 @@ struct VertexDescriptor {
     float4 position : POSITION;
     float3 normal : NORMAL;
     float2 tex : TEXCOORD0;
+
+    // instance data
+    //row_major float4x4 world : WORLD;
+    float4 instancePosition : INSTANCE_POSITION;
+    uint instanceId : SV_InstanceID;
 };
 
 // - Output
@@ -31,6 +36,11 @@ PixelDescriptor transformToScreenSpace(VertexDescriptor vertex) {
 
     // Set the w component (since it is not going to be passed along to the shader)
     vertex.position.w = 1.0f;
+
+    // Update the position of the vertices based on the data for this particular instance.
+    vertex.position.x += vertex.instancePosition.x;
+    vertex.position.y += vertex.instancePosition.y;
+    vertex.position.z += vertex.instancePosition.z;
 
     // Calculate the screen space position of the vertex against the world, view, and projection matrices
     pixel.worldSpacePosition = mul(vertex.position, objectWorldMatrix);
