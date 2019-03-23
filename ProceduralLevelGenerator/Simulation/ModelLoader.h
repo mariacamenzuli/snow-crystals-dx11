@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "../3D Components/Models/Model.h"
-#include "../3D Components/Models/ProcedurallyGeneratedTerrain.h"
 
 class ModelLoader {
 public:
@@ -17,7 +16,7 @@ public:
     };
 
     Model* getModel(ModelId modelId);
-    ProcedurallyGeneratedTerrain* createProceduralTerrain(int height, int width);
+    Model* createProceduralTerrain(int height, int width);
 
 private:
     std::map<ModelId, std::unique_ptr<Model>> modelMap;

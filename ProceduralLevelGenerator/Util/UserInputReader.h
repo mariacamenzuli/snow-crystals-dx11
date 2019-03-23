@@ -15,7 +15,6 @@ public:
 
     void read();
     bool isEscapePressed();
-    bool isGPressed();
     bool isQPressed();
     bool isWPressed();
     bool isEPressed();

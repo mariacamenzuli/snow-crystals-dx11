@@ -80,10 +80,6 @@ bool UserInputReader::isEscapePressed() {
     return (keyboardState[DIK_ESCAPE] & 0x80) != 0;
 }
 
-bool UserInputReader::isGPressed() {
-    return (keyboardState[DIK_G] & 0x80) != 0;
-}
-
 bool UserInputReader::isQPressed() {
     return (keyboardState[DIK_Q] & 0x80) != 0;
 }

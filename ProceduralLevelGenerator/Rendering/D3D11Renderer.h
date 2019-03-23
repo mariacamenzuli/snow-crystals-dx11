@@ -36,7 +36,6 @@ public:
     void renderFrame();
     ID3D11Device* getDevice();
     void writeCurrentShadowMapToDds();
-    void updateBufferData();
 
 private:
     struct MonitorDescriptor {

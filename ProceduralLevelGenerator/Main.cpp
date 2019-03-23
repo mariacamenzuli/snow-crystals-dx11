@@ -29,7 +29,6 @@ void readUserInput(UserInputReader& userInput,
                    Win32RenderingWindow& renderingWindow,
                    D3D11Renderer& renderer,
                    Camera& camera,
-                   GeneratedLevelScene& simulation,
                    float deltaTime) {
     userInput.read();
 
@@ -79,11 +78,6 @@ void readUserInput(UserInputReader& userInput,
 
     if (userInput.isTPressed()) {
         shouldRender = true;
-    }
-
-    if (userInput.isGPressed()) {
-        simulation.mutateTerrain();
-        renderer.updateBufferData();
     }
 
     int mouseChangeX;
@@ -152,7 +146,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 
             while (metricsTracker.timeSinceLastSimulationUpdate > timePerFrame) {
                 metricsTracker.timeSinceLastSimulationUpdate -= timePerFrame;
-                readUserInput(userInput, renderingWindow, d3D11Renderer, camera, simulation, timePerFrame);
+                readUserInput(userInput, renderingWindow, d3D11Renderer, camera, timePerFrame);
                 simulation.update(timePerFrame);
                 metricsTracker.newSimulationUpdate();
             }
