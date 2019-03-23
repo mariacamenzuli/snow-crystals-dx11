@@ -55,12 +55,12 @@ private:
         }
     };
 
-    const static int HEXAGON_LATTICE_WIDTH = 40;
-    const static int HEXAGON_LATTICE_HEIGHT = 40;
+    const static int HEXAGON_LATTICE_WIDTH = 25;
+    const static int HEXAGON_LATTICE_HEIGHT = 25;
     constexpr const static float ICE = 1.0f;
     constexpr const static float ALPHA = 1.0f;
     constexpr const static float BETA = 0.4f;
-    constexpr const static float GAMMA = 0.1f;
+    constexpr const static float GAMMA = 0.000005f;
 
     ModelLoader modelLoader;
     std::unique_ptr<SceneObject> rootSceneObject;

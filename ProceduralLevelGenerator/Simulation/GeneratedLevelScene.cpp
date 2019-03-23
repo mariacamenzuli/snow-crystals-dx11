@@ -1,14 +1,14 @@
 #include "GeneratedLevelScene.h"
-#include "../3D Components/Models/ProcedurallyGeneratedTerrain.h"
 
 GeneratedLevelScene::GeneratedLevelScene() : pointLight(D3DXVECTOR4(1.0f, 1.0f, 0.9f, 1.0f), D3DXVECTOR4(0.5f, 0.5f, 0.4f, 1.0f)) {
     rootSceneObject.reset(new SceneObject());
 
     auto world = rootSceneObject->attachChild(std::make_unique<SceneObject>(), "world");
 
-    const auto terrainModel = modelLoader.createProceduralTerrain(100, 100);
-    auto terrain = world->attachChild(std::make_unique<SceneObject>(terrainModel), "terrain");
-    terrain->translate(-50.0f, -9.0f, -50.0f);
+    const auto cubeModel = modelLoader.getModel(ModelLoader::ModelId::CUBE);
+    auto background = world->attachChild(std::make_unique<SceneObject>(cubeModel), "background");
+    background->scale(100.0f, 1.0f, 100.f);
+    background->translate(0.0f, -9.0f, 0.0f);
 
     const auto hexagonModel = modelLoader.getModel(ModelLoader::ModelId::HEXAGON);
     
@@ -105,7 +105,7 @@ void GeneratedLevelScene::update(float deltaTime) {
     updateCount++;
     // rootSceneObject->getChild("world")->getChild("cells")->rotateY(0.1f * deltaTime);
 
-    if (updateCount % 120 == 0) {
+    // if (updateCount % 120 == 0) {
         // std::string log = "Automaton step...\n";
         // OutputDebugStringW(std::wstring(log.begin(), log.end()).c_str());
 
@@ -155,5 +155,5 @@ void GeneratedLevelScene::update(float deltaTime) {
                 }
             }
         }
-    }
+    // }
 }

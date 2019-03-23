@@ -107,9 +107,6 @@
     <ClCompile Include="Simulation\GeneratedLevelScene.cpp">
       <Filter>Source Files\Simulation</Filter>
     </ClCompile>
-    <ClCompile Include="3D Components\Models\ProcedurallyGeneratedTerrain.cpp">
-      <Filter>Source Files\3D Components\Models</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationConfig.h">
@@ -171,9 +168,6 @@
     </ClInclude>
     <ClInclude Include="Simulation\GeneratedLevelScene.h">
       <Filter>Header Files\Simulation</Filter>
-    </ClInclude>
-    <ClInclude Include="3D Components\Models\ProcedurallyGeneratedTerrain.h">
-      <Filter>Header Files\3D Components\Models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
