@@ -14,7 +14,7 @@ GeneratedLevelScene::GeneratedLevelScene() : pointLight(D3DXVECTOR4(1.0f, 1.0f, 
     
     auto hexLattice = world->attachChild(std::make_unique<SceneObject>(snowflakeModel), "snowflake");
     hexLattice->rotateZ(1.5708f);
-    hexLattice->scale(0.105f, 0.105f, 0.105f);
+    hexLattice->scale(0.105f, 0.105f, 0.805f);
     hexLattice->translate(- (HEXAGON_LATTICE_WIDTH), -(HEXAGON_LATTICE_HEIGHT), -20.0f);
     // hexLattice->scale(3.0f, 3.0f, 3.0f);
     
