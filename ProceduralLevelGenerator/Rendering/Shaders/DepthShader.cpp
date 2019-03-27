@@ -11,12 +11,16 @@ void DepthShader::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 }
 
 void DepthShader::setActive(ID3D11DeviceContext* deviceContext) {
-    deviceContext->IASetInputLayout(layout.Get());
+    deviceContext->IASetInputLayout(inputLayout.Get());
     deviceContext->VSSetShader(vertexShader.Get(), nullptr, 0);
     deviceContext->PSSetShader(pixelShader.Get(), nullptr, 0);
 }
 
-void DepthShader::updateTransformationMatricesBuffer(ID3D11DeviceContext* deviceContext, D3DXMATRIX objectWorldMatrix, D3DXMATRIX pointLightViewMatrix, D3DXMATRIX pointLightProjectionMatrix) {
+void DepthShader::updateTransformationMatricesBuffer(ID3D11DeviceContext* deviceContext,
+                                                     D3DXMATRIX objectWorldMatrix,
+                                                     D3DXMATRIX pointLightViewMatrix,
+                                                     D3DXMATRIX pointLightProjectionMatrix,
+                                                     int isInstanced) {
     D3DXMatrixTranspose(&objectWorldMatrix, &objectWorldMatrix);
     D3DXMatrixTranspose(&pointLightViewMatrix, &pointLightViewMatrix);
     D3DXMatrixTranspose(&pointLightProjectionMatrix, &pointLightProjectionMatrix);
@@ -32,6 +36,7 @@ void DepthShader::updateTransformationMatricesBuffer(ID3D11DeviceContext* device
     transformationMatrixData->worldMatrix = objectWorldMatrix;
     transformationMatrixData->viewMatrix = pointLightViewMatrix;
     transformationMatrixData->projectionMatrix = pointLightProjectionMatrix;
+    transformationMatrixData->isInstanced = isInstanced;
 
     // Unlock the constant buffer.
     deviceContext->Unmap(transformationMatricesBuffer.Get(), 0);
@@ -50,30 +55,30 @@ void DepthShader::setupVertexShader(ID3D11Device* device) {
         throw std::runtime_error("Failed to create depth shader. Creation of vertex shader failed.");
     }
 
-    D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
+    D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[2];
 
-    polygonLayout[0].SemanticName = "POSITION";
-    polygonLayout[0].SemanticIndex = 0;
-    polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-    polygonLayout[0].InputSlot = 0;
-    polygonLayout[0].AlignedByteOffset = 0;
-    polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-    polygonLayout[0].InstanceDataStepRate = 0;
+    inputLayoutDesc[0].SemanticName = "POSITION";
+    inputLayoutDesc[0].SemanticIndex = 0;
+    inputLayoutDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    inputLayoutDesc[0].InputSlot = 0;
+    inputLayoutDesc[0].AlignedByteOffset = 0;
+    inputLayoutDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+    inputLayoutDesc[0].InstanceDataStepRate = 0;
 
-    polygonLayout[1].SemanticName = "INSTANCE_POSITION";
-    polygonLayout[1].SemanticIndex = 0;
-    polygonLayout[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-    polygonLayout[1].InputSlot = 1;
-    polygonLayout[1].AlignedByteOffset = 0;
-    polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
-    polygonLayout[1].InstanceDataStepRate = 1;
-    
-    unsigned int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
+    inputLayoutDesc[1].SemanticName = "INSTANCE_POSITION";
+    inputLayoutDesc[1].SemanticIndex = 0;
+    inputLayoutDesc[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    inputLayoutDesc[1].InputSlot = 1;
+    inputLayoutDesc[1].AlignedByteOffset = 0;
+    inputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
+    inputLayoutDesc[1].InstanceDataStepRate = 1;
 
-    result = device->CreateInputLayout(polygonLayout, numElements, depthVertexBuffer.data(),
-                                       depthVertexBuffer.size(), layout.GetAddressOf());
+    result = device->CreateInputLayout(inputLayoutDesc,
+                                       sizeof inputLayoutDesc / sizeof inputLayoutDesc[0],
+                                       depthVertexBuffer.data(),
+                                       depthVertexBuffer.size(), inputLayout.GetAddressOf());
     if (FAILED(result)) {
-        throw std::runtime_error("Failed to create depth shader. Creation of input layout failed.");
+        throw std::runtime_error("Failed to create depth shader. Creation of instanced input layout failed.");
     }
 
     D3D11_BUFFER_DESC transformationMatricesBufferDesc;

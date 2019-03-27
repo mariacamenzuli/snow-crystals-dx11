@@ -123,7 +123,8 @@ void D3D11Renderer::renderFrame() {
                 lightShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                                *sceneObject->getWorldMatrix(),
                                                                viewMatrix,
-                                                               projectionMatrix);
+                                                               projectionMatrix,
+                                                               sceneObject->getModel()->isInstanced());
     
                 for (auto const& materialIndexRange : sceneObject->getModel()->getMaterialIndexRanges()) {
                     bool isTextured = false;
@@ -141,6 +142,7 @@ void D3D11Renderer::renderFrame() {
                     const auto indicesToDrawCount = (materialIndexRange.endInclusive + 1) - materialIndexRange.startInclusive;
 
                     if (sceneObject->getModel()->isInstanced()) {
+                        updateInstanceBuffer(sceneObject->getModel()->getInstances());
                         deviceContext->DrawIndexedInstanced(indicesToDrawCount, sceneObject->getModel()->getInstanceCount(), indexStartLocation, vertexStartLocation, 0); //todo: fix instance pointer
                     } else {
                         deviceContext->DrawIndexed(indicesToDrawCount, indexStartLocation, vertexStartLocation);
@@ -430,17 +432,17 @@ void D3D11Renderer::setupVertexAndIndexBuffers() {
     }
 
     // Set up the description of the instance buffer.
-    instanceBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    instanceBufferDesc.ByteWidth = sizeof(Model::Instance) * 3; //todo INSTANCE COUNT
+    instanceBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+    instanceBufferDesc.ByteWidth = sizeof(Model::Instance) * 10000;
     instanceBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    instanceBufferDesc.CPUAccessFlags = 0;
+    instanceBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     instanceBufferDesc.MiscFlags = 0;
     instanceBufferDesc.StructureByteStride = 0;
 
-    auto instances = new Model::Instance[3]; //todo
-    instances[0].position = D3DXVECTOR3(0.0f, -4.0f, 0.0f);
-    instances[1].position = D3DXVECTOR3(0.0f, 4.0f, 0.0f);
-    instances[2].position = D3DXVECTOR3(-6.0f, 0.0f, 0.0f);
+    auto instances = new Model::Instance[10000];
+    for (int i = 0; i < 10000; i++) {
+        instances[i].position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+    }
 
     // Give the subresource structure a pointer to the instance data.
     instanceData.pSysMem = instances;
@@ -487,6 +489,34 @@ void D3D11Renderer::setupVertexAndIndexBuffers() {
     deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
+void D3D11Renderer::updateInstanceBuffer(std::vector<Model::Instance> instances) {
+    for (int i = instances.size(); i < 10000; i++) {
+        instances.push_back({ D3DXVECTOR3(0.0f, 0.0f, 0.0f) });
+    }
+    
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    // ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+    deviceContext->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    memcpy(mappedResource.pData, instances.data(), sizeof(Model::Instance) * 10000);
+    deviceContext->Unmap(instanceBuffer.Get(), 0);
+
+    //-----------------------
+
+    // D3D11_MAPPED_SUBRESOURCE mappedData;
+    // deviceContext->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+    // Model::Instance* dataView = reinterpret_cast<Model::Instance*>(mappedData.pData);
+    //
+    // for (int i = 0; i < 10000; i++) {
+    //     if (i < instances.size()) {
+    //         dataView[i] = instances[i];
+    //     } else {
+    //         dataView[i] = { D3DXVECTOR3(1.0f, 0.0f, 0.0f) };
+    //     }
+    // }
+    //
+    // deviceContext->Unmap(instanceBuffer.Get(), 0);
+}
+
 void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
     shadowMap.clearRenderTarget(deviceContext.Get(), 0);
     shadowMap.clearRenderTarget(deviceContext.Get(), 1);
@@ -513,7 +543,8 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                     depthShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                                    *sceneObject->getWorldMatrix(),
                                                                    scene->getPointLight()->getViewMatrixPositiveX(),
-                                                                   *pointLightProjectionMatrix);
+                                                                   *pointLightProjectionMatrix,
+                                                                   sceneObject->getModel()->isInstanced());
                     deviceContext->DrawIndexedInstanced(sceneObject->getModel()->getIndexCount(), sceneObject->getModel()->getInstanceCount(), indexStartLocation, vertexStartLocation, 0); //todo: fix instance pointer
 
                     // -VE X
@@ -521,7 +552,8 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                     depthShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                                    *sceneObject->getWorldMatrix(),
                                                                    scene->getPointLight()->getViewMatrixNegativeX(),
-                                                                   *pointLightProjectionMatrix);
+                                                                   *pointLightProjectionMatrix,
+                                                                   sceneObject->getModel()->isInstanced());
                     deviceContext->DrawIndexedInstanced(sceneObject->getModel()->getIndexCount(), sceneObject->getModel()->getInstanceCount(), indexStartLocation, vertexStartLocation, 0); //todo: fix instance pointer
 
                     // +VE Y
@@ -529,7 +561,8 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                     depthShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                                    *sceneObject->getWorldMatrix(),
                                                                    scene->getPointLight()->getViewMatrixPositiveY(),
-                                                                   *pointLightProjectionMatrix);
+                                                                   *pointLightProjectionMatrix,
+                                                                   sceneObject->getModel()->isInstanced());
                     deviceContext->DrawIndexedInstanced(sceneObject->getModel()->getIndexCount(), sceneObject->getModel()->getInstanceCount(), indexStartLocation, vertexStartLocation, 0); //todo: fix instance pointer
 
                     // -VE Y
@@ -537,7 +570,8 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                     depthShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                                    *sceneObject->getWorldMatrix(),
                                                                    scene->getPointLight()->getViewMatrixNegativeY(),
-                                                                   *pointLightProjectionMatrix);
+                                                                   *pointLightProjectionMatrix,
+                                                                   sceneObject->getModel()->isInstanced());
                     deviceContext->DrawIndexedInstanced(sceneObject->getModel()->getIndexCount(), sceneObject->getModel()->getInstanceCount(), indexStartLocation, vertexStartLocation, 0); //todo: fix instance pointer
 
                     // +VE Z
@@ -545,7 +579,8 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                     depthShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                                    *sceneObject->getWorldMatrix(),
                                                                    scene->getPointLight()->getViewMatrixPositiveZ(),
-                                                                   *pointLightProjectionMatrix);
+                                                                   *pointLightProjectionMatrix,
+                                                                   sceneObject->getModel()->isInstanced());
                     deviceContext->DrawIndexedInstanced(sceneObject->getModel()->getIndexCount(), sceneObject->getModel()->getInstanceCount(), indexStartLocation, vertexStartLocation, 0); //todo: fix instance pointer
 
                     // -VE Z
@@ -553,7 +588,8 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                     depthShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                                    *sceneObject->getWorldMatrix(),
                                                                    scene->getPointLight()->getViewMatrixNegativeZ(),
-                                                                   *pointLightProjectionMatrix);
+                                                                   *pointLightProjectionMatrix,
+                                                                   sceneObject->getModel()->isInstanced());
                     deviceContext->DrawIndexedInstanced(sceneObject->getModel()->getIndexCount(), sceneObject->getModel()->getInstanceCount(), indexStartLocation, vertexStartLocation, 0); //todo: fix instance pointer
                 } else {
                     // +VE X
@@ -561,7 +597,8 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                     depthShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                                    *sceneObject->getWorldMatrix(),
                                                                    scene->getPointLight()->getViewMatrixPositiveX(),
-                                                                   *pointLightProjectionMatrix);
+                                                                   *pointLightProjectionMatrix,
+                                                                   sceneObject->getModel()->isInstanced());
                     deviceContext->DrawIndexed(sceneObject->getModel()->getIndexCount(), indexStartLocation, vertexStartLocation);
                     
                     // -VE X
@@ -569,7 +606,8 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                     depthShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                                    *sceneObject->getWorldMatrix(),
                                                                    scene->getPointLight()->getViewMatrixNegativeX(),
-                                                                   *pointLightProjectionMatrix);
+                                                                   *pointLightProjectionMatrix,
+                                                                   sceneObject->getModel()->isInstanced());
                     deviceContext->DrawIndexed(sceneObject->getModel()->getIndexCount(), indexStartLocation, vertexStartLocation);
 
                     // +VE Y
@@ -577,7 +615,8 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                     depthShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                                    *sceneObject->getWorldMatrix(),
                                                                    scene->getPointLight()->getViewMatrixPositiveY(),
-                                                                   *pointLightProjectionMatrix);
+                                                                   *pointLightProjectionMatrix,
+                                                                   sceneObject->getModel()->isInstanced());
                     deviceContext->DrawIndexed(sceneObject->getModel()->getIndexCount(), indexStartLocation, vertexStartLocation);
 
                     // -VE Y
@@ -585,7 +624,8 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                     depthShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                                    *sceneObject->getWorldMatrix(),
                                                                    scene->getPointLight()->getViewMatrixNegativeY(),
-                                                                   *pointLightProjectionMatrix);
+                                                                   *pointLightProjectionMatrix,
+                                                                   sceneObject->getModel()->isInstanced());
                     deviceContext->DrawIndexed(sceneObject->getModel()->getIndexCount(), indexStartLocation, vertexStartLocation);
 
                     // +VE Z
@@ -593,7 +633,8 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                     depthShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                                    *sceneObject->getWorldMatrix(),
                                                                    scene->getPointLight()->getViewMatrixPositiveZ(),
-                                                                   *pointLightProjectionMatrix);
+                                                                   *pointLightProjectionMatrix,
+                                                                   sceneObject->getModel()->isInstanced());
                     deviceContext->DrawIndexed(sceneObject->getModel()->getIndexCount(), indexStartLocation, vertexStartLocation);
 
                     // -VE Z
@@ -601,7 +642,8 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                     depthShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                                    *sceneObject->getWorldMatrix(),
                                                                    scene->getPointLight()->getViewMatrixNegativeZ(),
-                                                                   *pointLightProjectionMatrix);
+                                                                   *pointLightProjectionMatrix,
+                                                                   sceneObject->getModel()->isInstanced());
                     deviceContext->DrawIndexed(sceneObject->getModel()->getIndexCount(), indexStartLocation, vertexStartLocation);
                 }
             }

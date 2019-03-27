@@ -18,7 +18,8 @@ public:
     void updateTransformationMatricesBuffer(ID3D11DeviceContext* deviceContext,
                                             D3DXMATRIX objectWorldMatrix,
                                             D3DXMATRIX cameraViewMatrix,
-                                            D3DXMATRIX cameraProjectionMatrix);
+                                            D3DXMATRIX cameraProjectionMatrix,
+                                            int isInstanced);
     void updateCameraBuffer(ID3D11DeviceContext* deviceContext, D3DXVECTOR3 cameraPosition);
     void updateAmbientLightBuffer(ID3D11DeviceContext* deviceContext, D3DXVECTOR4 ambientLightColor);
     void updatePointLightBuffer(ID3D11DeviceContext* deviceContext,  D3DXVECTOR4 diffuse, D3DXVECTOR4 specular, D3DXMATRIX worldMatrix);
@@ -31,6 +32,10 @@ private:
         D3DXMATRIX objectWorldMatrix;
         D3DXMATRIX cameraViewMatrix;
         D3DXMATRIX cameraProjectionMatrix;
+        float isInstanced;
+        float padding0;
+        float padding1;
+        float padding2;
     };
 
     struct CameraBuffer {
@@ -57,7 +62,7 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;
     Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;
-    Microsoft::WRL::ComPtr<ID3D11InputLayout> layout;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
     Microsoft::WRL::ComPtr<ID3D11Buffer> transformationMatricesBuffer;
     Microsoft::WRL::ComPtr<ID3D11Buffer> cameraBuffer;
     Microsoft::WRL::ComPtr<ID3D11Buffer> ambientLightBuffer;

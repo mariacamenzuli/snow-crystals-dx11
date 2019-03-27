@@ -14,15 +14,8 @@ public:
     PointLight* getPointLight() override;
     void update(float deltaTime);
 private:
-    enum class CellState {
-        ICE,
-        AIR
-    };
-
     struct Cell {
-        CellState state;
-        SceneObject* sceneObject;
-        float value; // water vapor
+        float waterVaporValue;
         float receptiveValue;
         float nonReceptiveValue;
         int x;
@@ -31,33 +24,19 @@ private:
 
         Cell() = default;
 
-        Cell(int x, int y, CellState state, SceneObject* sceneObject, float value)
-            : x(x),
-              y(y),
-              state(state),
-              sceneObject(sceneObject),
-              value(value),
-              receptiveValue(0.0f),
-              nonReceptiveValue(value) {
-            if (state == CellState::AIR) {
-                sceneObject->hide();
-            }
-        }
-
-        void thaw() {
-            state = CellState::AIR;
-            sceneObject->hide();
-        }
-
-        void freeze() {
-            state = CellState::ICE;
-            sceneObject->show();
+        Cell(int x, int y, float value) : waterVaporValue(value),
+                                          receptiveValue(0.0f),
+                                          nonReceptiveValue(value),
+                                          x(x),
+                                          y(y) {
         }
     };
 
-    const static int HEXAGON_LATTICE_WIDTH = 25;
-    const static int HEXAGON_LATTICE_HEIGHT = 25;
-    constexpr const static float ICE = 1.0f;
+    const static int HEXAGON_LATTICE_WIDTH = 100;
+    const static int HEXAGON_LATTICE_HEIGHT = 100;
+
+    constexpr const static float ICE = 1.0f; // cell is frozen if >= ICE
+
     constexpr const static float ALPHA = 1.0f;
     constexpr const static float BETA = 0.4f;
     constexpr const static float GAMMA = 0.000005f;
@@ -65,8 +44,13 @@ private:
     ModelLoader modelLoader;
     std::unique_ptr<SceneObject> rootSceneObject;
     PointLight pointLight;
+
+    Model* snowflakeModel;
     Cell cells[HEXAGON_LATTICE_WIDTH][HEXAGON_LATTICE_HEIGHT];
-    std::vector<Cell*> ice;
-    std::vector<Cell*> boundary;
+    std::vector<Cell*> iceCells;
+    std::vector<Cell*> boundaryCells;
+
     int updateCount = 0;
+
+    D3DXVECTOR3 calculateCellInstancePosition(int x, int y);
 };

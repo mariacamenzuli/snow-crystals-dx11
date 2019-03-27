@@ -91,6 +91,7 @@ private:
     void createRasterizerState();
     void setupViewport();
     void setupVertexAndIndexBuffers();
+    void updateInstanceBuffer(std::vector<Model::Instance> instances);
     void renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix);
     void setBackbufferAsRenderTargetAndClear();
 

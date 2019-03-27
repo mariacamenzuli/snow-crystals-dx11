@@ -14,7 +14,7 @@ void LightShader::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 }
 
 void LightShader::setActive(ID3D11DeviceContext* deviceContext) {
-    deviceContext->IASetInputLayout(layout.Get());
+    deviceContext->IASetInputLayout(inputLayout.Get());
     deviceContext->VSSetShader(vertexShader.Get(), nullptr, 0);
     deviceContext->PSSetShader(pixelShader.Get(), nullptr, 0);
 }
@@ -22,7 +22,8 @@ void LightShader::setActive(ID3D11DeviceContext* deviceContext) {
 void LightShader::updateTransformationMatricesBuffer(ID3D11DeviceContext* deviceContext,
                                                      D3DXMATRIX objectWorldMatrix,
                                                      D3DXMATRIX cameraViewMatrix,
-                                                     D3DXMATRIX cameraProjectionMatrix) {
+                                                     D3DXMATRIX cameraProjectionMatrix,
+                                                     int isInstanced) {
     // Transpose the matrices to prepare them for the shader.
     D3DXMatrixTranspose(&objectWorldMatrix, &objectWorldMatrix);
     D3DXMatrixTranspose(&cameraViewMatrix, &cameraViewMatrix);
@@ -43,6 +44,7 @@ void LightShader::updateTransformationMatricesBuffer(ID3D11DeviceContext* device
     transformationMatrixData->objectWorldMatrix = objectWorldMatrix;
     transformationMatrixData->cameraViewMatrix = cameraViewMatrix;
     transformationMatrixData->cameraProjectionMatrix = cameraProjectionMatrix;
+    transformationMatrixData->isInstanced = isInstanced;
 
     // Unlock the constant buffer.
     deviceContext->Unmap(transformationMatricesBuffer.Get(), 0);
@@ -141,48 +143,47 @@ void LightShader::setupVertexShader(ID3D11Device* device) {
         throw std::runtime_error("Failed to create light shader. Creation of vertex shader failed.");
     }
 
-    D3D11_INPUT_ELEMENT_DESC polygonLayout[4];
+    D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[4];
 
-    polygonLayout[0].SemanticName = "POSITION";
-    polygonLayout[0].SemanticIndex = 0;
-    polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-    polygonLayout[0].InputSlot = 0;
-    polygonLayout[0].AlignedByteOffset = 0;
-    polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-    polygonLayout[0].InstanceDataStepRate = 0;
+    inputLayoutDesc[0].SemanticName = "POSITION";
+    inputLayoutDesc[0].SemanticIndex = 0;
+    inputLayoutDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    inputLayoutDesc[0].InputSlot = 0;
+    inputLayoutDesc[0].AlignedByteOffset = 0;
+    inputLayoutDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+    inputLayoutDesc[0].InstanceDataStepRate = 0;
 
-    polygonLayout[1].SemanticName = "NORMAL";
-    polygonLayout[1].SemanticIndex = 0;
-    polygonLayout[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-    polygonLayout[1].InputSlot = 0;
-    polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-    polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-    polygonLayout[1].InstanceDataStepRate = 0;
+    inputLayoutDesc[1].SemanticName = "NORMAL";
+    inputLayoutDesc[1].SemanticIndex = 0;
+    inputLayoutDesc[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    inputLayoutDesc[1].InputSlot = 0;
+    inputLayoutDesc[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+    inputLayoutDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+    inputLayoutDesc[1].InstanceDataStepRate = 0;
 
-    polygonLayout[2].SemanticName = "TEXCOORD";
-    polygonLayout[2].SemanticIndex = 0;
-    polygonLayout[2].Format = DXGI_FORMAT_R32G32_FLOAT;
-    polygonLayout[2].InputSlot = 0;
-    polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-    polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-    polygonLayout[2].InstanceDataStepRate = 0;
+    inputLayoutDesc[2].SemanticName = "TEXCOORD";
+    inputLayoutDesc[2].SemanticIndex = 0;
+    inputLayoutDesc[2].Format = DXGI_FORMAT_R32G32_FLOAT;
+    inputLayoutDesc[2].InputSlot = 0;
+    inputLayoutDesc[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+    inputLayoutDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+    inputLayoutDesc[2].InstanceDataStepRate = 0;
 
-    polygonLayout[3].SemanticName = "INSTANCE_POSITION";
-    polygonLayout[3].SemanticIndex = 0;
-    polygonLayout[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-    polygonLayout[3].InputSlot = 1;
-    polygonLayout[3].AlignedByteOffset = 0;
-    polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
-    polygonLayout[3].InstanceDataStepRate = 1;
-
-    // Get a count of the elements in the layout.
-    unsigned int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
+    inputLayoutDesc[3].SemanticName = "INSTANCE_POSITION";
+    inputLayoutDesc[3].SemanticIndex = 0;
+    inputLayoutDesc[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    inputLayoutDesc[3].InputSlot = 1;
+    inputLayoutDesc[3].AlignedByteOffset = 0;
+    inputLayoutDesc[3].InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
+    inputLayoutDesc[3].InstanceDataStepRate = 1;
 
     // Create the vertex input layout.
-    result = device->CreateInputLayout(polygonLayout, numElements, lightVertexBuffer.data(),
-                                       lightVertexBuffer.size(), layout.GetAddressOf());
+    result = device->CreateInputLayout(inputLayoutDesc,
+                                       sizeof inputLayoutDesc / sizeof inputLayoutDesc[0],
+                                       lightVertexBuffer.data(),
+                                       lightVertexBuffer.size(), inputLayout.GetAddressOf());
     if (FAILED(result)) {
-        throw std::runtime_error("Failed to create light shader. Creation of input layout failed.");
+        throw std::runtime_error("Failed to create light shader. Creation of instanced input layout failed.");
     }
 
     D3D11_BUFFER_DESC transformationMatricesBufferDesc;

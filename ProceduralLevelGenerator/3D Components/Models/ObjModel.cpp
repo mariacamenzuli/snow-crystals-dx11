@@ -149,6 +149,10 @@ unsigned long* ObjModel::getIndices() {
     return indices.data();
 }
 
+std::vector<Model::Instance> ObjModel::getInstances() {
+    return instances;
+}
+
 std::vector<Model::MaterialIndexRange> ObjModel::getMaterialIndexRanges() {
     return materialIndexRanges;
 }
@@ -163,6 +167,10 @@ bool ObjModel::isInstanced() {
 
 void ObjModel::addInstance(Instance instance) {
     instances.push_back(instance);
+}
+
+void ObjModel::clearInstances() {
+    instances.clear();
 }
 
 bool ObjModel::lineStartsWith(std::string text, std::string prefix) {
