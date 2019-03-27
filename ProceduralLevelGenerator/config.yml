@@ -1,3 +1,5 @@
+#  --- RENDERING ---
+
 # if false, an 800 x 600 window will be used
 fullscreen_enabled: false
 
@@ -7,3 +9,12 @@ screen_depth: 1000.0
 screen_near: 0.1
 
 shadowmap_size: 1080
+
+#  --- SNOW CRYSTAL GENERATOR ---
+
+hexagon_lattice_width: 100
+hexagon_lattice_height: 100
+
+alpha: 1.0 # weighting factor
+beta: 0.4 # background level
+gamma: 0.000005 # growth constant

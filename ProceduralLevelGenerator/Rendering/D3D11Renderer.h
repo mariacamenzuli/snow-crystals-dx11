@@ -28,7 +28,8 @@ public:
                   float screenDepth,
                   const int screenWidth,
                   const int screenHeight,
-                  const int shadowMapSize);
+                  const int shadowMapSize,
+                  const int instanceBufferSize);
     ~D3D11Renderer();
 
     void setScene(Scene* scene);
@@ -59,6 +60,7 @@ private:
     bool vsyncEnabled;
     float screenNear;
     float screenDepth;
+    int instanceBufferSize;
 
     Scene* scene = nullptr;
     Camera* camera = nullptr;

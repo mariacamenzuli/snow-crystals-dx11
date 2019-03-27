@@ -7,7 +7,7 @@
 #include "Util/UserInputReader.h"
 #include "Util/MetricsTracker.h"
 #include "ApplicationConfig.h"
-#include "Simulation/GeneratedLevelScene.h"
+#include "Simulation/SnowflakeMemoryGameScene.h"
 
 bool shouldRender = true;
 
@@ -104,7 +104,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
             screenHeight = 600;
         }
 
-        Win32RenderingWindow renderingWindow("PCG", isFullScreenEnabled, screenWidth, screenHeight, hInstance);
+        Win32RenderingWindow renderingWindow("Snowflake Memory Game", isFullScreenEnabled, screenWidth, screenHeight, hInstance);
         D3D11Renderer d3D11Renderer(renderingWindow.getWindowHandle(),
                                     isFullScreenEnabled,
                                     config.isVsyncEnabled(),
@@ -112,19 +112,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
                                     config.getScreenDepth(),
                                     screenWidth,
                                     screenHeight,
-                                    config.getShadowMapSize());
+                                    config.getShadowMapSize(),
+                                    config.getHexagonLatticeHeight() * config.getHexagonLatticeWidth());
 
-        GeneratedLevelScene simulation;
-        d3D11Renderer.setScene(&simulation);
+        SnowflakeMemoryGameScene scene(config.getHexagonLatticeWidth(),
+                                       config.getHexagonLatticeHeight(),
+                                       config.getAlpha(),
+                                       config.getBeta(),
+                                       config.getGamma());
+        d3D11Renderer.setScene(&scene);
 
         Camera camera;
         d3D11Renderer.setCamera(&camera);
 
         // set camera initial position
-        // camera.yaw(-1.5708f);
         camera.moveStraight(-250.0f);
         camera.moveVertical(-12.5f);
-        // camera.pitch(0.174533f);
         UserInputReader userInput(hInstance, renderingWindow.getWindowHandle());
 
         renderingWindow.showWindow();
@@ -147,7 +150,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
             while (metricsTracker.timeSinceLastSimulationUpdate > timePerFrame) {
                 metricsTracker.timeSinceLastSimulationUpdate -= timePerFrame;
                 readUserInput(userInput, renderingWindow, d3D11Renderer, camera, timePerFrame);
-                simulation.update(timePerFrame);
+                scene.update(timePerFrame);
                 metricsTracker.newSimulationUpdate();
             }
 

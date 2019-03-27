@@ -104,7 +104,7 @@
     <ClCompile Include="Rendering\Shaders\DepthShader.cpp">
       <Filter>Source Files\Rendering\Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\GeneratedLevelScene.cpp">
+    <ClCompile Include="Simulation\SnowflakeMemoryGameScene.cpp">
       <Filter>Source Files\Simulation</Filter>
     </ClCompile>
   </ItemGroup>
@@ -166,7 +166,7 @@
     <ClInclude Include="Rendering\Shaders\DepthShader.h">
       <Filter>Header Files\Rendering\Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\GeneratedLevelScene.h">
+    <ClInclude Include="Simulation\SnowflakeMemoryGameScene.h">
       <Filter>Header Files\Simulation</Filter>
     </ClInclude>
   </ItemGroup>

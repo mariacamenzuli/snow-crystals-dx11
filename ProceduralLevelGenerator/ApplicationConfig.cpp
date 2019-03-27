@@ -50,6 +50,31 @@ ApplicationConfig::ApplicationConfig() {
                 shadowMapSize = std::stoi(value);
                 continue;
             }
+
+            if (key == "hexagon_lattice_width") {
+                hexagonLatticeWidth = std::stoi(value);
+                continue;
+            }
+
+            if (key == "hexagon_lattice_height") {
+                hexagonLatticeHeight = std::stoi(value);
+                continue;
+            }
+
+            if (key == "alpha") {
+                alpha = std::stof(value);
+                continue;
+            }
+
+            if (key == "beta") {
+                beta = std::stof(value);
+                continue;
+            }
+
+            if (key == "gamma") {
+                gamma = std::stof(value);
+                continue;
+            }
         }
     }
 }
@@ -74,6 +99,26 @@ float ApplicationConfig::getScreenNear() {
 
 int ApplicationConfig::getShadowMapSize() {
     return shadowMapSize;
+}
+
+int ApplicationConfig::getHexagonLatticeWidth() {
+    return hexagonLatticeWidth;
+}
+
+int ApplicationConfig::getHexagonLatticeHeight() {
+    return hexagonLatticeHeight;
+}
+
+float ApplicationConfig::getAlpha() {
+    return alpha;
+}
+
+float ApplicationConfig::getBeta() {
+    return beta;
+}
+
+float ApplicationConfig::getGamma() {
+    return gamma;
 }
 
 bool ApplicationConfig::readBoolean(const std::string& property) {

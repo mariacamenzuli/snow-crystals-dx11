@@ -10,12 +10,14 @@ D3D11Renderer::D3D11Renderer(HWND windowHandle,
                              float screenDepth,
                              const int screenWidth,
                              const int screenHeight,
-                             const int shadowMapSize) : screenWidth(screenWidth),
-                                                        screenHeight(screenHeight),
-                                                        fullscreenEnabled(fullscreenEnabled),
-                                                        vsyncEnabled(vsyncEnabled),
-                                                        screenNear(screenNear),
-                                                        screenDepth(screenDepth) {
+                             const int shadowMapSize,
+                             const int instanceBufferSize) : screenWidth(screenWidth),
+                                                             screenHeight(screenHeight),
+                                                             fullscreenEnabled(fullscreenEnabled),
+                                                             vsyncEnabled(vsyncEnabled),
+                                                             screenNear(screenNear),
+                                                             screenDepth(screenDepth),
+                                                             instanceBufferSize(instanceBufferSize) {
     hardwareInfo = queryPhysicalDeviceDescriptors();
     createSwapChainAndDevice(windowHandle);
 
@@ -60,7 +62,7 @@ D3D11Renderer::~D3D11Renderer() {
 void D3D11Renderer::setScene(Scene* scene) {
     this->scene = scene;
     setupVertexAndIndexBuffers();
-    
+
     std::stack<SceneObject*> toVisit;
     toVisit.push(scene->getRootSceneObject());
 
@@ -107,17 +109,17 @@ void D3D11Renderer::renderFrame() {
     lightShader.updateCameraBuffer(deviceContext.Get(), camera->getPosition());
     lightShader.updateAmbientLightBuffer(deviceContext.Get(), scene->getAmbientLight());
     lightShader.updatePointLightBuffer(deviceContext.Get(), scene->getPointLight()->getDiffuse(), scene->getPointLight()->getSpecular(), *scene->getPointLight()->getWorldMatrix());
-    
+
     int indexStartLocation = 0;
     int vertexStartLocation = 0;
-    
+
     std::stack<SceneObject*> toVisit;
     toVisit.push(scene->getRootSceneObject());
-    
+
     while (!toVisit.empty()) {
         SceneObject* sceneObject = toVisit.top();
         toVisit.pop();
-    
+
         if (sceneObject->getModel() != nullptr) {
             if (sceneObject->isVisible()) {
                 lightShader.updateTransformationMatricesBuffer(deviceContext.Get(),
@@ -125,20 +127,20 @@ void D3D11Renderer::renderFrame() {
                                                                viewMatrix,
                                                                projectionMatrix,
                                                                sceneObject->getModel()->isInstanced());
-    
+
                 for (auto const& materialIndexRange : sceneObject->getModel()->getMaterialIndexRanges()) {
                     bool isTextured = false;
                     if (materialIndexRange.material.isTextured()) {
                         isTextured = true;
                         lightShader.updateTexture(deviceContext.Get(), textureMap.find(materialIndexRange.material.getTextureFileName())->second.get());
                     }
-    
+
                     lightShader.updateMaterialBuffer(deviceContext.Get(),
                                                      materialIndexRange.material.getAmbientColor(),
                                                      materialIndexRange.material.getDiffuseColor(),
                                                      materialIndexRange.material.getSpecularColor(),
                                                      isTextured);
-    
+
                     const auto indicesToDrawCount = (materialIndexRange.endInclusive + 1) - materialIndexRange.startInclusive;
 
                     if (sceneObject->getModel()->isInstanced()) {
@@ -147,16 +149,16 @@ void D3D11Renderer::renderFrame() {
                     } else {
                         deviceContext->DrawIndexed(indicesToDrawCount, indexStartLocation, vertexStartLocation);
                     }
-    
+
                     indexStartLocation = indexStartLocation + indicesToDrawCount;
                 }
             } else {
                 indexStartLocation = indexStartLocation + sceneObject->getModel()->getIndexCount();
             }
-    
+
             vertexStartLocation = vertexStartLocation + sceneObject->getModel()->getVertexCount();
         }
-    
+
         auto children = sceneObject->getChildren();
         for (auto child : children) {
             toVisit.push(child);
@@ -433,14 +435,14 @@ void D3D11Renderer::setupVertexAndIndexBuffers() {
 
     // Set up the description of the instance buffer.
     instanceBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-    instanceBufferDesc.ByteWidth = sizeof(Model::Instance) * 10000;
+    instanceBufferDesc.ByteWidth = sizeof(Model::Instance) * instanceBufferSize;
     instanceBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     instanceBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     instanceBufferDesc.MiscFlags = 0;
     instanceBufferDesc.StructureByteStride = 0;
 
-    auto instances = new Model::Instance[10000];
-    for (int i = 0; i < 10000; i++) {
+    auto instances = new Model::Instance[instanceBufferSize];
+    for (int i = 0; i < instanceBufferSize; i++) {
         instances[i].position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
     }
 
@@ -456,9 +458,9 @@ void D3D11Renderer::setupVertexAndIndexBuffers() {
     }
 
     // Bind the vertex and instance buffers to the input-assembler stage.
-    unsigned int stride[2] = { sizeof(Model::Vertex), sizeof(Model::Instance) };
-    unsigned int offset[2] = { 0,0 };
-    ID3D11Buffer* bufferPointers[2] = { vertexBuffer.Get(), instanceBuffer.Get() };
+    unsigned int stride[2] = {sizeof(Model::Vertex), sizeof(Model::Instance)};
+    unsigned int offset[2] = {0, 0};
+    ID3D11Buffer* bufferPointers[2] = {vertexBuffer.Get(), instanceBuffer.Get()};
     deviceContext->IASetVertexBuffers(0, 2, bufferPointers, stride, offset);
 
     auto sceneIndices = getAllIndices(scene);
@@ -506,10 +508,10 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
 
     int indexStartLocation = 0;
     int vertexStartLocation = 0;
-    
+
     std::stack<SceneObject*> toVisit;
     toVisit.push(scene->getRootSceneObject());
-    
+
     while (!toVisit.empty()) {
         SceneObject* sceneObject = toVisit.top();
         toVisit.pop();
@@ -579,7 +581,7 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                                                                    *pointLightProjectionMatrix,
                                                                    sceneObject->getModel()->isInstanced());
                     deviceContext->DrawIndexed(sceneObject->getModel()->getIndexCount(), indexStartLocation, vertexStartLocation);
-                    
+
                     // -VE X
                     shadowMap.setAsRenderTarget(deviceContext.Get(), 1);
                     depthShader.updateTransformationMatricesBuffer(deviceContext.Get(),
@@ -626,11 +628,11 @@ void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
                     deviceContext->DrawIndexed(sceneObject->getModel()->getIndexCount(), indexStartLocation, vertexStartLocation);
                 }
             }
-    
+
             indexStartLocation = indexStartLocation + sceneObject->getModel()->getIndexCount();
             vertexStartLocation = vertexStartLocation + sceneObject->getModel()->getVertexCount();
         }
-    
+
         auto children = sceneObject->getChildren();
         for (auto child : children) {
             toVisit.push(child);
@@ -642,7 +644,7 @@ void D3D11Renderer::setBackbufferAsRenderTargetAndClear() {
     deviceContext->OMSetRenderTargets(1, renderTargetView.GetAddressOf(), depthStencilView.Get());
     deviceContext->RSSetViewports(1, &viewport);
 
-    float backBufferStartingColor[4] = { 0.0f, 0.0f, 0.01f, 1.0f };
+    float backBufferStartingColor[4] = {0.0f, 0.0f, 0.01f, 1.0f};
     deviceContext->ClearRenderTargetView(renderTargetView.Get(), backBufferStartingColor);
     deviceContext->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 }

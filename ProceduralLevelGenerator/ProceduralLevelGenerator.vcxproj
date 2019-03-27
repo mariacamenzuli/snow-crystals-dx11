@@ -95,7 +95,7 @@
     <ClCompile Include="3D Components\Models\CubeModel.cpp" />
     <ClCompile Include="Rendering\D3D11Renderer.cpp" />
     <ClCompile Include="Rendering\Shaders\DepthShader.cpp" />
-    <ClCompile Include="Simulation\GeneratedLevelScene.cpp" />
+    <ClCompile Include="Simulation\SnowflakeMemoryGameScene.cpp" />
     <ClCompile Include="Rendering\Shaders\LightShader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="3D Components\Material.cpp" />
@@ -116,7 +116,7 @@
     <ClInclude Include="Rendering\D3D11Renderer.h" />
     <ClInclude Include="Rendering\Shaders\DepthShader.h" />
     <ClInclude Include="Util\FileReader.h" />
-    <ClInclude Include="Simulation\GeneratedLevelScene.h" />
+    <ClInclude Include="Simulation\SnowflakeMemoryGameScene.h" />
     <ClInclude Include="Rendering\Shaders\LightShader.h" />
     <ClInclude Include="3D Components\Material.h" />
     <ClInclude Include="Util\MetricsTracker.h" />
