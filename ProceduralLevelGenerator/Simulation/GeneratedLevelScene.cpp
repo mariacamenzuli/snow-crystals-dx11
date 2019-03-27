@@ -6,17 +6,16 @@ GeneratedLevelScene::GeneratedLevelScene() : pointLight(D3DXVECTOR4(1.0f, 1.0f, 
     auto world = rootSceneObject->attachChild(std::make_unique<SceneObject>(), "world");
 
     const auto cubeModel = modelLoader.getModel(ModelLoader::ModelId::CUBE);
-    auto background = world->attachChild(std::make_unique<SceneObject>(cubeModel), "background");
-    // cubeModel->addInstance({ {-10.0f, 5.0f, 0.0f} });
-    // cubeModel->addInstance({ {10.0f, 0.0f, 0.0f} });
-    background->scale(100.0f, 1.0f, 100.f);
-    background->translate(0.0f, -4.0f, 0.0f);
+    // auto background = world->attachChild(std::make_unique<SceneObject>(cubeModel), "background");
+    // background->scale(150.0f, 1.0f, 150.f);
+    // background->rotateX(1.5708f);
 
     snowflakeModel = modelLoader.getModel(ModelLoader::ModelId::HEXAGON);
     
     auto hexLattice = world->attachChild(std::make_unique<SceneObject>(snowflakeModel), "snowflake");
-    // hexLattice->rotateZ(1.5708f);
+    hexLattice->rotateZ(1.5708f);
     hexLattice->scale(0.105f, 0.105f, 0.105f);
+    hexLattice->translate(- (HEXAGON_LATTICE_WIDTH), -(HEXAGON_LATTICE_HEIGHT), -20.0f);
     // hexLattice->scale(3.0f, 3.0f, 3.0f);
     
     // auto cellGrid = world->attachChild(std::make_unique<SceneObject>(), "cells");
@@ -24,7 +23,6 @@ GeneratedLevelScene::GeneratedLevelScene() : pointLight(D3DXVECTOR4(1.0f, 1.0f, 
     for (int y = 0; y < HEXAGON_LATTICE_HEIGHT; y++) {
         int t = y % 2;
         for (int x = 0; x < HEXAGON_LATTICE_WIDTH; x++) {
-            // hexagonCell->translate(x * 2 + t, y * 1.75, 0.0f);
             cells[x][y] = { x, y, BETA };
         }
     }
@@ -87,8 +85,9 @@ GeneratedLevelScene::GeneratedLevelScene() : pointLight(D3DXVECTOR4(1.0f, 1.0f, 
     }
 
     // auto pointLightIndicator = world->attachChild(std::make_unique<SceneObject>(cubeModel));
+    // pointLightIndicator->translate(0.0f, 0.0f, -20.0f);
     // pointLightIndicator->translate(0.0f, 50.0f, -20.0f);
-    pointLight.translate(0.0f, 50.0f, -20.0f);
+    pointLight.translate(0.0f, -12.5f, -50.0f);
 }
 
 GeneratedLevelScene::~GeneratedLevelScene() = default;
