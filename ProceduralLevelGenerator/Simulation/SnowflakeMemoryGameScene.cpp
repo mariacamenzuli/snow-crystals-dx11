@@ -177,6 +177,10 @@ void SnowflakeMemoryGameScene::update(float deltaTime) {
                 }
             }
         }
+
+        if (iceCells.size() == hexagonLatticeHeight * hexagonLatticeHeight) {
+            automatonRunning = false;
+        }
     }
 }
 
