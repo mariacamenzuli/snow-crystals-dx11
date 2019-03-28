@@ -14,6 +14,7 @@ public:
 
     int getHexagonLatticeWidth();
     int getHexagonLatticeHeight();
+    int getAutomatonStepEveryNthFrame();
     float getAlpha();
     float getBeta();
     float getGamma();
@@ -27,6 +28,7 @@ private:
 
     int hexagonLatticeWidth = 100;
     int hexagonLatticeHeight = 100;
+    int automatonStepEveryNthFrame = 1;
     float alpha = 1.0f;
     float beta = 0.4f;
     float gamma = 0.000005f;

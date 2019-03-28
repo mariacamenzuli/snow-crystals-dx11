@@ -61,6 +61,11 @@ ApplicationConfig::ApplicationConfig() {
                 continue;
             }
 
+            if (key == "automaton_step_every_nth_frame") {
+                automatonStepEveryNthFrame = std::stoi(value);
+                continue;
+            }
+
             if (key == "alpha") {
                 alpha = std::stof(value);
                 continue;
@@ -107,6 +112,10 @@ int ApplicationConfig::getHexagonLatticeWidth() {
 
 int ApplicationConfig::getHexagonLatticeHeight() {
     return hexagonLatticeHeight;
+}
+
+int ApplicationConfig::getAutomatonStepEveryNthFrame() {
+    return automatonStepEveryNthFrame;
 }
 
 float ApplicationConfig::getAlpha() {

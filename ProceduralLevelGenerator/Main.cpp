@@ -117,6 +117,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 
         SnowflakeMemoryGameScene scene(config.getHexagonLatticeWidth(),
                                        config.getHexagonLatticeHeight(),
+                                       config.getAutomatonStepEveryNthFrame(),
                                        config.getAlpha(),
                                        config.getBeta(),
                                        config.getGamma());

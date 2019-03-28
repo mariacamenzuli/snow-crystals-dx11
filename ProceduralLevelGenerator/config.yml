@@ -15,6 +15,9 @@ shadowmap_size: 1080
 hexagon_lattice_width: 100
 hexagon_lattice_height: 100
 
+# increase this to slow the automton down if it is growing too quickly
+automaton_step_every_nth_frame: 1
+
 alpha: 1.0 # weighting factor
 beta: 0.4 # background level
 gamma: 0.000005 # growth constant

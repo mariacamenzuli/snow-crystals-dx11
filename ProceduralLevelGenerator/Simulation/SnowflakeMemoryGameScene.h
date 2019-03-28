@@ -8,6 +8,7 @@ class SnowflakeMemoryGameScene : public Scene {
 public:
     SnowflakeMemoryGameScene(const int hexagonLatticeWidth,
                              const int hexagonLatticeHeight,
+                             const int automatonStepEveryNthFrame,
                              const float alpha,
                              const float beta,
                              const float gamma);
@@ -40,6 +41,8 @@ private:
 
     int hexagonLatticeWidth;
     int hexagonLatticeHeight;
+
+    int automatonStepEveryNthFrame;
 
     float alpha;
     float beta;
