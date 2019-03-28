@@ -18,6 +18,8 @@ public:
     D3DXVECTOR4 getAmbientLight() override;
     PointLight* getPointLight() override;
     void update(float deltaTime);
+    void startGame();
+
 private:
     struct Cell {
         float waterVaporValue;
@@ -47,6 +49,8 @@ private:
     float alpha;
     float beta;
     float gamma;
+
+    bool automatonRunning = true;
 
     ModelLoader modelLoader;
     std::unique_ptr<SceneObject> rootSceneObject;

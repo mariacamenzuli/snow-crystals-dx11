@@ -29,6 +29,7 @@ void readUserInput(UserInputReader& userInput,
                    Win32RenderingWindow& renderingWindow,
                    D3D11Renderer& renderer,
                    Camera& camera,
+                   SnowflakeMemoryGameScene& gameScene,
                    float deltaTime) {
     userInput.read();
 
@@ -69,7 +70,7 @@ void readUserInput(UserInputReader& userInput,
     }
 
     if (userInput.isSpacebarPressed()) {
-        renderer.writeCurrentShadowMapToDds();
+        gameScene.startGame();
     }
 
     if (userInput.isRPressed()) {
@@ -150,7 +151,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 
             while (metricsTracker.timeSinceLastSimulationUpdate > timePerFrame) {
                 metricsTracker.timeSinceLastSimulationUpdate -= timePerFrame;
-                readUserInput(userInput, renderingWindow, d3D11Renderer, camera, timePerFrame);
+                readUserInput(userInput, renderingWindow, d3D11Renderer, camera, scene, timePerFrame);
                 scene.update(timePerFrame);
                 metricsTracker.newSimulationUpdate();
             }

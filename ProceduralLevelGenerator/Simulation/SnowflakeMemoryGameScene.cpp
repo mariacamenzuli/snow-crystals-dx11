@@ -128,7 +128,7 @@ void SnowflakeMemoryGameScene::update(float deltaTime) {
     updateCount++;
     // rootSceneObject->getChild("world")->getChild("snowflake")->rotateZ(0.6f * deltaTime);
 
-    if (updateCount % automatonStepEveryNthFrame == 0) {
+    if (automatonRunning && updateCount % automatonStepEveryNthFrame == 0) {
         // std::string log = "Automaton step...\n";
         // OutputDebugStringW(std::wstring(log.begin(), log.end()).c_str());
 
@@ -178,6 +178,10 @@ void SnowflakeMemoryGameScene::update(float deltaTime) {
             }
         }
     }
+}
+
+void SnowflakeMemoryGameScene::startGame() {
+    automatonRunning = false;
 }
 
 D3DXVECTOR3 SnowflakeMemoryGameScene::calculateCellInstancePosition(int x, int y) {
