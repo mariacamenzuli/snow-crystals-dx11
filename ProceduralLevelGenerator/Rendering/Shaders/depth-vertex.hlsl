@@ -30,23 +30,15 @@ PixelDescriptor transformToScreenSpace(VertexDescriptor vertex) {
     // Change the position vector to be 4 units for proper matrix calculations.
     vertex.position.w = 1.0f;
 
-    //if (isInstanced > 0) {
+    if (isInstanced > 0) {
         // Update the position of the vertices based on the data for this particular instance.
-     //   vertex.position.x += vertex.instancePosition.x;
-     //   vertex.position.y += vertex.instancePosition.y;
-      //  vertex.position.z += vertex.instancePosition.z;
-   // }
+        vertex.position.x += vertex.instancePosition.x;
+        vertex.position.y += vertex.instancePosition.y;
+        vertex.position.z += vertex.instancePosition.z;
+    }
 
     // Calculate the position of the vertex against the world, view, and projection matrices.
     pixel.position = mul(vertex.position, worldMatrix);
-
-    if (isInstanced > 0) {
-        // Update the position of the vertices based on the data for this particular instance.
-        pixel.position.x += vertex.instancePosition.x;
-        pixel.position.y += vertex.instancePosition.y;
-        pixel.position.z += vertex.instancePosition.z;
-    }
-
     pixel.position = mul(pixel.position, viewMatrix);
 
     pixel.distanceFromPointToCamera = length(pixel.position);

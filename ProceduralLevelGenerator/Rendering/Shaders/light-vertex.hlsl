@@ -38,23 +38,15 @@ PixelDescriptor transformToScreenSpace(VertexDescriptor vertex) {
     // Set the w component (since it is not going to be passed along to the shader)
     vertex.position.w = 1.0f;
 
-    //if (isInstanced > 0) {
+    if (isInstanced > 0) {
         // Update the position of the vertices based on the data for this particular instance.
-     //   vertex.position.x += vertex.instancePosition.x;
-    //    vertex.position.y += vertex.instancePosition.y;
-    //    vertex.position.z += vertex.instancePosition.z;
-    //}
+        vertex.position.x += vertex.instancePosition.x;
+        vertex.position.y += vertex.instancePosition.y;
+        vertex.position.z += vertex.instancePosition.z;
+    }
 
     // Calculate the screen space position of the vertex against the world, view, and projection matrices
     pixel.worldSpacePosition = mul(vertex.position, objectWorldMatrix);
-
-    if (isInstanced > 0) {
-        // Update the position of the vertices based on the data for this particular instance.
-        pixel.worldSpacePosition.x += vertex.instancePosition.x;
-        pixel.worldSpacePosition.y += vertex.instancePosition.y;
-        pixel.worldSpacePosition.z += vertex.instancePosition.z;
-    }
-
     pixel.screenSpacePosition = mul(pixel.worldSpacePosition, cameraViewMatrix);
     pixel.screenSpacePosition = mul(pixel.screenSpacePosition, cameraProjectionMatrix);
 

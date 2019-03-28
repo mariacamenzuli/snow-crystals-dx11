@@ -19,20 +19,19 @@ SnowflakeMemoryGameScene::SnowflakeMemoryGameScene(const int hexagonLatticeWidth
 
     auto world = rootSceneObject->attachChild(std::make_unique<SceneObject>(), "world");
 
-    const auto cubeModel = modelLoader.getModel(ModelLoader::ModelId::CUBE);
+    // const auto cubeModel = modelLoader.getModel(ModelLoader::ModelId::CUBE);
     // auto background = world->attachChild(std::make_unique<SceneObject>(cubeModel), "background");
     // background->scale(150.0f, 1.0f, 150.f);
     // background->rotateX(1.5708f);
+    // background->translate(0, 0, 10);
 
     snowflakeModel = modelLoader.getModel(ModelLoader::ModelId::HEXAGON);
 
     auto hexLattice = world->attachChild(std::make_unique<SceneObject>(snowflakeModel), "snowflake");
-    hexLattice->rotateZ(1.5708f);
+    hexLattice->translate(- (hexagonLatticeHeight / 2) * 16, - (hexagonLatticeWidth / 2) * 18, 0.0f);
     hexLattice->scale(0.105f, 0.105f, 0.805f);
-    hexLattice->translate(- hexagonLatticeWidth, - hexagonLatticeHeight, -20.0f);
-    // hexLattice->scale(3.0f, 3.0f, 3.0f);
-
-    // auto cellGrid = world->attachChild(std::make_unique<SceneObject>(), "cells");
+    hexLattice->rotateZ(1.5708f);
+    hexLattice->rotateY(3.14159f);
 
     for (int y = 0; y < hexagonLatticeHeight; y++) {
         int t = y % 2;
@@ -125,7 +124,7 @@ PointLight* SnowflakeMemoryGameScene::getPointLight() {
 
 void SnowflakeMemoryGameScene::update(float deltaTime) {
     updateCount++;
-    // rootSceneObject->getChild("world")->getChild("snowflake")->rotateY(0.1f * deltaTime);
+    // rootSceneObject->getChild("world")->getChild("snowflake")->rotateZ(0.6f * deltaTime);
 
     // if (updateCount % 120 == 0) {
     // std::string log = "Automaton step...\n";
@@ -180,6 +179,8 @@ void SnowflakeMemoryGameScene::update(float deltaTime) {
 }
 
 D3DXVECTOR3 SnowflakeMemoryGameScene::calculateCellInstancePosition(int x, int y) {
-    // return D3DXVECTOR3(x * 20 + (y % 2 * 10), y * 20.75f, 0.0f);
-    return D3DXVECTOR3(x * 2 + (y % 2), y * 1.75f, 0.0f);
+    // note that this is in local space
+    // also, this is before the hexagons get a 90 degree rotation, so x and y get swapped
+    return D3DXVECTOR3(y * 16, x * 18 + (y % 2) * 8.5f, 0.0f);
+    // return D3DXVECTOR3(x * 2 + (y % 2), y * 1.75f, 0.0f);
 }
