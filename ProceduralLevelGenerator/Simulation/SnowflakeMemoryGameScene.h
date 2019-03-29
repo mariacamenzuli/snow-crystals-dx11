@@ -19,6 +19,9 @@ public:
     PointLight* getPointLight() override;
     void update(float deltaTime);
 
+    void incrementAutomatonStepEveryNthFrame(int increment);
+    void incrementAlpha(float increment);
+    void incrementGamma(float increment);
     void stopAutomaton();
     void turnRight();
     void turnLeft();

@@ -81,6 +81,22 @@ void readUserInput(UserInputReader& userInput,
         gameScene.turnLeft();
     }
 
+    if (userInput.isF1Pressed()) {
+        gameScene.incrementGamma(0.01f);
+    }
+
+    if (userInput.isF2Pressed()) {
+        gameScene.incrementGamma(-0.01f);
+    }
+
+    if (userInput.isF3Pressed()) {
+        gameScene.incrementAutomatonStepEveryNthFrame(1);
+    }
+
+    if (userInput.isF4Pressed()) {
+        gameScene.incrementAutomatonStepEveryNthFrame(-1);
+    }
+
     if (userInput.isRPressed()) {
         shouldRender = false;
     }

@@ -25,6 +25,10 @@ public:
     bool isCPressed();
     bool isRPressed();
     bool isTPressed();
+    bool isF1Pressed();
+    bool isF2Pressed();
+    bool isF3Pressed();
+    bool isF4Pressed();
     bool isRightArrowPressed();
     bool isLeftArrowPressed();
     bool isSpacebarPressed();

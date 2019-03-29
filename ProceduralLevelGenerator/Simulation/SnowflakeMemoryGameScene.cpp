@@ -161,6 +161,18 @@ void SnowflakeMemoryGameScene::update(float deltaTime) {
     }
 }
 
+void SnowflakeMemoryGameScene::incrementAutomatonStepEveryNthFrame(int increment) {
+    automatonStepEveryNthFrame = max(1, automatonStepEveryNthFrame + increment);
+}
+
+void SnowflakeMemoryGameScene::incrementAlpha(float increment) {
+    alpha = fmax(0, alpha + increment);
+}
+
+void SnowflakeMemoryGameScene::incrementGamma(float increment) {
+    gamma = fmax(0, gamma + increment);
+}
+
 void SnowflakeMemoryGameScene::stopAutomaton() {
     state = IDLE;
 }

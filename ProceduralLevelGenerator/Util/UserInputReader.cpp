@@ -120,6 +120,22 @@ bool UserInputReader::isTPressed() {
     return (keyboardState[DIK_T] & 0x80) != 0;
 }
 
+bool UserInputReader::isF1Pressed() {
+    return (keyboardState[DIK_F1] & 0x80) != 0;
+}
+
+bool UserInputReader::isF2Pressed() {
+    return (keyboardState[DIK_F2] & 0x80) != 0;
+}
+
+bool UserInputReader::isF3Pressed() {
+    return (keyboardState[DIK_F3] & 0x80) != 0;
+}
+
+bool UserInputReader::isF4Pressed() {
+    return (keyboardState[DIK_F4] & 0x80) != 0;
+}
+
 bool UserInputReader::isRightArrowPressed() {
     return (keyboardState[DIK_RIGHTARROW] & 0x80) != 0;
 }
