@@ -167,13 +167,12 @@ void SnowflakeMemoryGameScene::update(float deltaTime) {
                 if (cells[x][y].waterVaporValue >= ICE) {
                     iceCells.push_back(&cells[x][y]);
                     snowflakeModel->addInstance({calculateCellInstancePosition(x, y)});
-                }
-            }
-        }
-        for (auto iceCell : iceCells) {
-            for (auto neighbour : iceCell->neighbours) {
-                if (neighbour->waterVaporValue < ICE) {
-                    boundaryCells.push_back(neighbour);
+
+                    for (auto neighbour : cells[x][y].neighbours) {
+                        if (neighbour->waterVaporValue < ICE) {
+                            boundaryCells.push_back(neighbour);
+                        }
+                    }
                 }
             }
         }
