@@ -70,7 +70,15 @@ void readUserInput(UserInputReader& userInput,
     }
 
     if (userInput.isSpacebarPressed()) {
-        gameScene.startGame();
+        gameScene.stopAutomaton();
+    }
+
+    if (userInput.isRightArrowPressed()) {
+        gameScene.turnRight();
+    }
+
+    if (userInput.isLeftArrowPressed()) {
+        gameScene.turnLeft();
     }
 
     if (userInput.isRPressed()) {

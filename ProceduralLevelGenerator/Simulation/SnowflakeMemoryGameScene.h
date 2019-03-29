@@ -18,7 +18,10 @@ public:
     D3DXVECTOR4 getAmbientLight() override;
     PointLight* getPointLight() override;
     void update(float deltaTime);
-    void startGame();
+
+    void stopAutomaton();
+    void turnRight();
+    void turnLeft();
 
 private:
     struct Cell {
@@ -39,7 +42,18 @@ private:
         }
     };
 
+    enum State {
+        RUNNING_AUTOMATON,
+        IDLE,
+        TURNING_RIGHT,
+        TURNING_LEFT
+    };
+
+    constexpr const static float TURN_SPEED = 1.25f;
     constexpr const static float ICE = 1.0f; // cell is frozen if >= ICE
+    constexpr const static float SIXTY_DEGREES_IN_RADIANS = 1.0472f;
+
+    State state = RUNNING_AUTOMATON;
 
     int hexagonLatticeWidth;
     int hexagonLatticeHeight;
@@ -49,8 +63,6 @@ private:
     float alpha;
     float beta;
     float gamma;
-
-    bool automatonRunning = true;
 
     ModelLoader modelLoader;
     std::unique_ptr<SceneObject> rootSceneObject;
@@ -63,5 +75,8 @@ private:
 
     int updateCount = 0;
 
+    float angleTurned = 0;
+
     D3DXVECTOR3 calculateCellInstancePosition(int x, int y);
+    void automatonStep();
 };

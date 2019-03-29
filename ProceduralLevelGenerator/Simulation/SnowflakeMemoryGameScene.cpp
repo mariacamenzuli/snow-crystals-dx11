@@ -125,71 +125,113 @@ PointLight* SnowflakeMemoryGameScene::getPointLight() {
 }
 
 void SnowflakeMemoryGameScene::update(float deltaTime) {
-    updateCount++;
-    // rootSceneObject->getChild("world")->getChild("snowflake")->rotateZ(0.6f * deltaTime);
-
-    if (automatonRunning && updateCount % automatonStepEveryNthFrame == 0) {
-        // std::string log = "Automaton step...\n";
-        // OutputDebugStringW(std::wstring(log.begin(), log.end()).c_str());
-
-        for (auto iceCell : iceCells) {
-            iceCell->receptiveValue = iceCell->waterVaporValue + gamma;
-            iceCell->nonReceptiveValue = 0.0f;
+    switch (state) {
+    case RUNNING_AUTOMATON:
+        updateCount++;
+        if (updateCount % automatonStepEveryNthFrame == 0) {
+            automatonStep();
         }
-        for (auto boundaryCell : boundaryCells) {
-            boundaryCell->receptiveValue = boundaryCell->waterVaporValue + gamma;
-            boundaryCell->nonReceptiveValue = 0.0f;
+        break;
+    case IDLE:
+        // no-op
+        break;
+    case TURNING_RIGHT:
+        if (angleTurned > - SIXTY_DEGREES_IN_RADIANS) {
+            const auto angleRemaining = - SIXTY_DEGREES_IN_RADIANS - angleTurned;
+            const auto angleIncrement = - TURN_SPEED * deltaTime;
+            const auto clampedAngleIncrement = fmax(angleRemaining, angleIncrement);
+            rootSceneObject->getChild("world")->getChild("snowflake")->rotateZ(clampedAngleIncrement);
+            angleTurned += clampedAngleIncrement;
+        } else {
+            state = IDLE;
         }
-
-        iceCells.clear();
-        boundaryCells.clear();
-        snowflakeModel->clearInstances();
-
-        const auto diffusionWeight = alpha / 12.0f;
-        for (int y = 0; y < hexagonLatticeHeight; y++) {
-            for (int x = 0; x < hexagonLatticeWidth; x++) {
-                // Diffusion
-                cells[x][y].waterVaporValue = cells[x][y].nonReceptiveValue * (1.0f - diffusionWeight * 6.0f);
-                for (auto neighbour : cells[x][y].neighbours) {
-                    cells[x][y].waterVaporValue += neighbour->nonReceptiveValue * diffusionWeight;
-                }
-
-                // Growth
-                cells[x][y].waterVaporValue += cells[x][y].receptiveValue;
-            }
+        break;
+    case TURNING_LEFT:
+        if (angleTurned < SIXTY_DEGREES_IN_RADIANS) {
+            const auto angleRemaining = SIXTY_DEGREES_IN_RADIANS - angleTurned;
+            const auto angleIncrement = TURN_SPEED * deltaTime;
+            const auto clampedAngleIncrement = fmin(angleRemaining, angleIncrement);
+            rootSceneObject->getChild("world")->getChild("snowflake")->rotateZ(clampedAngleIncrement);
+            angleTurned += clampedAngleIncrement;
+        } else {
+            state = IDLE;
         }
-
-        // Update state
-        for (int y = 0; y < hexagonLatticeHeight; y++) {
-            for (int x = 0; x < hexagonLatticeWidth; x++) {
-                cells[x][y].receptiveValue = 0.0f;
-                cells[x][y].nonReceptiveValue = cells[x][y].waterVaporValue;
-                if (cells[x][y].waterVaporValue >= ICE) {
-                    iceCells.push_back(&cells[x][y]);
-                    snowflakeModel->addInstance({calculateCellInstancePosition(x, y)});
-
-                    for (auto neighbour : cells[x][y].neighbours) {
-                        if (neighbour->waterVaporValue < ICE) {
-                            boundaryCells.push_back(neighbour);
-                        }
-                    }
-                }
-            }
-        }
-
-        if (iceCells.size() == hexagonLatticeHeight * hexagonLatticeHeight) {
-            automatonRunning = false;
-        }
+        break;
+    default: ;
     }
 }
 
-void SnowflakeMemoryGameScene::startGame() {
-    automatonRunning = false;
+void SnowflakeMemoryGameScene::stopAutomaton() {
+    state = IDLE;
+}
+
+void SnowflakeMemoryGameScene::turnRight() {
+    if (state == IDLE) {
+        state = TURNING_RIGHT;
+        angleTurned = 0;
+    }
+}
+
+void SnowflakeMemoryGameScene::turnLeft() {
+    if (state == IDLE) {
+        state = TURNING_LEFT;
+        angleTurned = 0;
+    }
 }
 
 D3DXVECTOR3 SnowflakeMemoryGameScene::calculateCellInstancePosition(int x, int y) {
     // note that this is in local space
     // also, this is before the hexagons get a 90 degree rotation, so x and y get swapped
     return D3DXVECTOR3(y * 16, x * 18 + (y % 2) * 8.5f, 0.0f);
-    // return D3DXVECTOR3(x * 2 + (y % 2), y * 1.75f, 0.0f);
+}
+
+void SnowflakeMemoryGameScene::automatonStep() {
+    for (auto iceCell : iceCells) {
+        iceCell->receptiveValue = iceCell->waterVaporValue + gamma;
+        iceCell->nonReceptiveValue = 0.0f;
+    }
+    for (auto boundaryCell : boundaryCells) {
+        boundaryCell->receptiveValue = boundaryCell->waterVaporValue + gamma;
+        boundaryCell->nonReceptiveValue = 0.0f;
+    }
+
+    iceCells.clear();
+    boundaryCells.clear();
+    snowflakeModel->clearInstances();
+
+    const auto diffusionWeight = alpha / 12.0f;
+    for (int y = 0; y < hexagonLatticeHeight; y++) {
+        for (int x = 0; x < hexagonLatticeWidth; x++) {
+            // Diffusion
+            cells[x][y].waterVaporValue = cells[x][y].nonReceptiveValue * (1.0f - diffusionWeight * 6.0f);
+            for (auto neighbour : cells[x][y].neighbours) {
+                cells[x][y].waterVaporValue += neighbour->nonReceptiveValue * diffusionWeight;
+            }
+
+            // Growth
+            cells[x][y].waterVaporValue += cells[x][y].receptiveValue;
+        }
+    }
+
+    // Update state
+    for (int y = 0; y < hexagonLatticeHeight; y++) {
+        for (int x = 0; x < hexagonLatticeWidth; x++) {
+            cells[x][y].receptiveValue = 0.0f;
+            cells[x][y].nonReceptiveValue = cells[x][y].waterVaporValue;
+            if (cells[x][y].waterVaporValue >= ICE) {
+                iceCells.push_back(&cells[x][y]);
+                snowflakeModel->addInstance({ calculateCellInstancePosition(x, y) });
+
+                for (auto neighbour : cells[x][y].neighbours) {
+                    if (neighbour->waterVaporValue < ICE) {
+                        boundaryCells.push_back(neighbour);
+                    }
+                }
+            }
+        }
+    }
+
+    if (iceCells.size() == hexagonLatticeHeight * hexagonLatticeHeight) {
+        stopAutomaton();
+    }
 }

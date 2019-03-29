@@ -120,6 +120,14 @@ bool UserInputReader::isTPressed() {
     return (keyboardState[DIK_T] & 0x80) != 0;
 }
 
+bool UserInputReader::isRightArrowPressed() {
+    return (keyboardState[DIK_RIGHTARROW] & 0x80) != 0;
+}
+
+bool UserInputReader::isLeftArrowPressed() {
+    return (keyboardState[DIK_LEFTARROW] & 0x80) != 0;
+}
+
 bool UserInputReader::isSpacebarPressed() {
     return (keyboardState[DIK_SPACE] & 0x80) != 0;
 }

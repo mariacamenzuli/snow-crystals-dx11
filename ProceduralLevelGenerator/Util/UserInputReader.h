@@ -25,6 +25,8 @@ public:
     bool isCPressed();
     bool isRPressed();
     bool isTPressed();
+    bool isRightArrowPressed();
+    bool isLeftArrowPressed();
     bool isSpacebarPressed();
     void getMouseLocationChange(int& mouseX, int& mouseY) const;
 
