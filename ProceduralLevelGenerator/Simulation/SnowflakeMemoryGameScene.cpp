@@ -1,4 +1,5 @@
 #include "SnowflakeMemoryGameScene.h"
+#include <ctime>
 
 SnowflakeMemoryGameScene::SnowflakeMemoryGameScene(const int hexagonLatticeWidth,
                                                    const int hexagonLatticeHeight,
@@ -12,9 +13,9 @@ SnowflakeMemoryGameScene::SnowflakeMemoryGameScene(const int hexagonLatticeWidth
                                                                         beta(beta),
                                                                         gamma(gamma),
                                                                         pointLight(D3DXVECTOR4(1.0f, 1.0f, 0.9f, 1.0f), D3DXVECTOR4(0.5f, 0.5f, 0.4f, 1.0f)) {
-    cells = new Cell*[hexagonLatticeWidth];
+    cells = new SnowflakeAutomatonCell*[hexagonLatticeWidth];
     for (int i = 0; i < hexagonLatticeWidth; ++i) {
-        cells[i] = new Cell[hexagonLatticeHeight];
+        cells[i] = new SnowflakeAutomatonCell[hexagonLatticeHeight];
     }
 
     rootSceneObject.reset(new SceneObject());
@@ -103,6 +104,8 @@ SnowflakeMemoryGameScene::SnowflakeMemoryGameScene(const int hexagonLatticeWidth
     // pointLightIndicator->translate(0.0f, 0.0f, -20.0f);
     // pointLightIndicator->translate(0.0f, 50.0f, -20.0f);
     pointLight.translate(0.0f, -12.5f, -50.0f);
+
+    srand(time(0));
 }
 
 SnowflakeMemoryGameScene::~SnowflakeMemoryGameScene() {
@@ -125,17 +128,28 @@ PointLight* SnowflakeMemoryGameScene::getPointLight() {
 }
 
 void SnowflakeMemoryGameScene::update(float deltaTime) {
-    switch (state) {
-    case RUNNING_AUTOMATON:
+    switch (snowflakeState) {
+    case SnowflakeState::GROWING:
         updateCount++;
         if (updateCount % automatonStepEveryNthFrame == 0) {
-            automatonStep();
+            progressSnowflakeGrowingAutomaton();
         }
         break;
-    case IDLE:
-        // no-op
+    case SnowflakeState::IDLE:
+        if (gameState == GameState::SHOWING_SEQUENCE && game.sequenceToDisplay.empty()) {
+            OutputDebugString(L"Accepting sequence input...\n");
+            gameState = GameState::ACCEPTING_SEQUENCE;
+        } else if (!game.sequenceToDisplay.empty()) {
+            auto isTurnLeft = game.sequenceToDisplay.front();
+            game.sequenceToDisplay.pop();
+            if (isTurnLeft) {
+                turnSnowflakeLeft();
+            } else {
+                turnSnowflakeRight();
+            }
+        }
         break;
-    case TURNING_RIGHT:
+    case SnowflakeState::TURNING_RIGHT:
         if (angleTurned > - SIXTY_DEGREES_IN_RADIANS) {
             const auto angleRemaining = - SIXTY_DEGREES_IN_RADIANS - angleTurned;
             const auto angleIncrement = - TURN_SPEED * deltaTime;
@@ -143,10 +157,10 @@ void SnowflakeMemoryGameScene::update(float deltaTime) {
             rootSceneObject->getChild("world")->getChild("snowflake")->rotateZ(clampedAngleIncrement);
             angleTurned += clampedAngleIncrement;
         } else {
-            state = IDLE;
+            snowflakeState = SnowflakeState::IDLE;
         }
         break;
-    case TURNING_LEFT:
+    case SnowflakeState::TURNING_LEFT:
         if (angleTurned < SIXTY_DEGREES_IN_RADIANS) {
             const auto angleRemaining = SIXTY_DEGREES_IN_RADIANS - angleTurned;
             const auto angleIncrement = TURN_SPEED * deltaTime;
@@ -154,7 +168,7 @@ void SnowflakeMemoryGameScene::update(float deltaTime) {
             rootSceneObject->getChild("world")->getChild("snowflake")->rotateZ(clampedAngleIncrement);
             angleTurned += clampedAngleIncrement;
         } else {
-            state = IDLE;
+            snowflakeState = SnowflakeState::IDLE;
         }
         break;
     default: ;
@@ -173,21 +187,55 @@ void SnowflakeMemoryGameScene::incrementGamma(float increment) {
     gamma = fmax(0, gamma + increment);
 }
 
-void SnowflakeMemoryGameScene::stopAutomaton() {
-    state = IDLE;
-}
-
-void SnowflakeMemoryGameScene::turnRight() {
-    if (state == IDLE) {
-        state = TURNING_RIGHT;
-        angleTurned = 0;
+void SnowflakeMemoryGameScene::startGame() {
+    if (gameState == GameState::INIT) {
+        OutputDebugString(L"Starting game...\n");
+        snowflakeState = SnowflakeState::IDLE;
+        generateTurnSequence();
     }
 }
 
-void SnowflakeMemoryGameScene::turnLeft() {
-    if (state == IDLE) {
-        state = TURNING_LEFT;
-        angleTurned = 0;
+void SnowflakeMemoryGameScene::inputRightTurn() {
+    if (gameState == GameState::ACCEPTING_SEQUENCE && snowflakeState == SnowflakeState::IDLE && !game.sequenceInputExpected.empty()) {
+        auto expectingTurnRight = !game.sequenceInputExpected.front();
+        game.sequenceInputExpected.pop();
+
+        int sequenceLengthIncrement = 0;
+        if (expectingTurnRight) {
+            game.sequenceToDisplay.push(false);
+            sequenceLengthIncrement = 1;
+        } else {
+            while (!game.sequenceInputExpected.empty()) {
+                game.sequenceInputExpected.pop();
+            }
+        }
+
+        if (game.sequenceInputExpected.empty()) {
+            game.sequenceLength += sequenceLengthIncrement;
+            generateTurnSequence();
+        }
+    }
+}
+
+void SnowflakeMemoryGameScene::inputLeftTurn() {
+    if (gameState == GameState::ACCEPTING_SEQUENCE && snowflakeState == SnowflakeState::IDLE && !game.sequenceInputExpected.empty()) {
+        auto expectingTurnLeft = game.sequenceInputExpected.front();
+        game.sequenceInputExpected.pop();
+
+        int sequenceLengthIncrement = 0;
+        if (expectingTurnLeft) {
+            game.sequenceToDisplay.push(true);
+            sequenceLengthIncrement = 1;
+        } else {
+            while (!game.sequenceInputExpected.empty()) {
+                game.sequenceInputExpected.pop();
+            }
+        }
+
+        if (game.sequenceInputExpected.empty()) {
+            game.sequenceLength += sequenceLengthIncrement;
+            generateTurnSequence();
+        }
     }
 }
 
@@ -197,7 +245,7 @@ D3DXVECTOR3 SnowflakeMemoryGameScene::calculateCellInstancePosition(int x, int y
     return D3DXVECTOR3(y * 16, x * 18 + (y % 2) * 8.5f, 0.0f);
 }
 
-void SnowflakeMemoryGameScene::automatonStep() {
+void SnowflakeMemoryGameScene::progressSnowflakeGrowingAutomaton() {
     for (auto iceCell : iceCells) {
         iceCell->receptiveValue = iceCell->waterVaporValue + gamma;
         iceCell->nonReceptiveValue = 0.0f;
@@ -244,6 +292,30 @@ void SnowflakeMemoryGameScene::automatonStep() {
     }
 
     if (iceCells.size() == hexagonLatticeHeight * hexagonLatticeHeight) {
-        stopAutomaton();
+        startGame();
     }
+}
+
+void SnowflakeMemoryGameScene::turnSnowflakeRight() {
+    if (snowflakeState == SnowflakeState::IDLE) {
+        snowflakeState = SnowflakeState::TURNING_RIGHT;
+        angleTurned = 0;
+    }
+}
+
+void SnowflakeMemoryGameScene::turnSnowflakeLeft() {
+    if (snowflakeState == SnowflakeState::IDLE) {
+        snowflakeState = SnowflakeState::TURNING_LEFT;
+        angleTurned = 0;
+    }
+}
+
+void SnowflakeMemoryGameScene::generateTurnSequence() {
+    OutputDebugString(L"Generating new turn sequence...\n");
+    for (int i = 0; i < game.sequenceLength; i++) {
+        const auto turnLeft = rand() % 2 == 0;
+        game.sequenceToDisplay.push(turnLeft);
+        game.sequenceInputExpected.push(turnLeft);
+    }
+    gameState = GameState::SHOWING_SEQUENCE;
 }

@@ -26,7 +26,7 @@ void RenderTargetTextureCube::initialize(ID3D11Device* device, int cubeSize) {
 
     result = device->CreateTexture2D(&textureDesc, nullptr, renderTargetTextureCube.GetAddressOf());
     if (FAILED(result)) {
-        throw std::runtime_error("Failed to create texture for render target texture.");
+        throw std::runtime_error("Failed to create texture for render target texture cube.");
     }
 
     D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
@@ -39,7 +39,7 @@ void RenderTargetTextureCube::initialize(ID3D11Device* device, int cubeSize) {
         renderTargetViewDesc.Texture2DArray.FirstArraySlice = i;
         result = device->CreateRenderTargetView(renderTargetTextureCube.Get(), &renderTargetViewDesc, renderTargetViews[i].GetAddressOf());
         if (FAILED(result)) {
-            throw std::runtime_error("Failed to create render target view for render target texture.");
+            throw std::runtime_error("Failed to create render target view for render target texture cube.");
         }
     }
 
@@ -51,7 +51,7 @@ void RenderTargetTextureCube::initialize(ID3D11Device* device, int cubeSize) {
 
     result = device->CreateShaderResourceView(renderTargetTextureCube.Get(), &shaderResourceViewDesc, shaderResourceView.GetAddressOf());
     if (FAILED(result)) {
-        throw std::runtime_error("Failed to create shader resource view for render target texture.");
+        throw std::runtime_error("Failed to create shader resource view for render target texture cube.");
     }
 
     for (int i = 0; i < 6; ++i) {

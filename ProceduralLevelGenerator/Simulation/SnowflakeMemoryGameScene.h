@@ -3,6 +3,7 @@
 #include "../3D Components/Scene.h"
 #include "ModelLoader.h"
 #include "../Util/UserInputReader.h"
+#include <queue>
 
 class SnowflakeMemoryGameScene : public Scene {
 public:
@@ -22,41 +23,56 @@ public:
     void incrementAutomatonStepEveryNthFrame(int increment);
     void incrementAlpha(float increment);
     void incrementGamma(float increment);
-    void stopAutomaton();
-    void turnRight();
-    void turnLeft();
+    void startGame();
+    void inputRightTurn();
+    void inputLeftTurn();
 
 private:
-    struct Cell {
+    struct SnowflakeAutomatonCell {
         float waterVaporValue;
         float receptiveValue;
         float nonReceptiveValue;
         int x;
         int y;
-        std::vector<Cell*> neighbours;
+        std::vector<SnowflakeAutomatonCell*> neighbours;
 
-        Cell() = default;
+        SnowflakeAutomatonCell() = default;
 
-        Cell(int x, int y, float value) : waterVaporValue(value),
-                                          receptiveValue(0.0f),
-                                          nonReceptiveValue(value),
-                                          x(x),
-                                          y(y) {
+        SnowflakeAutomatonCell(int x, int y, float value) : waterVaporValue(value),
+                                                            receptiveValue(0.0f),
+                                                            nonReceptiveValue(value),
+                                                            x(x),
+                                                            y(y) {
         }
     };
 
-    enum State {
-        RUNNING_AUTOMATON,
+    struct Game {
+        int sequenceLength = 2;
+        std::queue<boolean> sequenceToDisplay;
+        std::queue<boolean> sequenceInputExpected;
+    };
+
+    enum class SnowflakeState {
+        GROWING,
         IDLE,
         TURNING_RIGHT,
         TURNING_LEFT
+    };
+
+    enum class GameState {
+        INIT,
+        SHOWING_SEQUENCE,
+        ACCEPTING_SEQUENCE
     };
 
     constexpr const static float TURN_SPEED = 1.25f;
     constexpr const static float ICE = 1.0f; // cell is frozen if >= ICE
     constexpr const static float SIXTY_DEGREES_IN_RADIANS = 1.0472f;
 
-    State state = RUNNING_AUTOMATON;
+    SnowflakeState snowflakeState = SnowflakeState::GROWING;
+    GameState gameState = GameState::INIT;
+
+    Game game;
 
     int hexagonLatticeWidth;
     int hexagonLatticeHeight;
@@ -72,14 +88,17 @@ private:
     PointLight pointLight;
 
     Model* snowflakeModel;
-    Cell** cells;
-    std::vector<Cell*> iceCells;
-    std::vector<Cell*> boundaryCells;
+    SnowflakeAutomatonCell** cells;
+    std::vector<SnowflakeAutomatonCell*> iceCells;
+    std::vector<SnowflakeAutomatonCell*> boundaryCells;
 
     int updateCount = 0;
 
     float angleTurned = 0;
 
     D3DXVECTOR3 calculateCellInstancePosition(int x, int y);
-    void automatonStep();
+    void progressSnowflakeGrowingAutomaton();
+    void turnSnowflakeRight();
+    void turnSnowflakeLeft();
+    void generateTurnSequence();
 };

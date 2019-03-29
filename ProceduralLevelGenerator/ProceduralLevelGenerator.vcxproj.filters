@@ -107,6 +107,9 @@
     <ClCompile Include="Simulation\SnowflakeMemoryGameScene.cpp">
       <Filter>Source Files\Simulation</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\RenderTargetTexture.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationConfig.h">
@@ -168,6 +171,9 @@
     </ClInclude>
     <ClInclude Include="Simulation\SnowflakeMemoryGameScene.h">
       <Filter>Header Files\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\RenderTargetTexture.h">
+      <Filter>Header Files\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

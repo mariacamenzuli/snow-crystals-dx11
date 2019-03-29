@@ -95,6 +95,7 @@
     <ClCompile Include="3D Components\Models\CubeModel.cpp" />
     <ClCompile Include="Rendering\D3D11Renderer.cpp" />
     <ClCompile Include="Rendering\Shaders\DepthShader.cpp" />
+    <ClCompile Include="Rendering\RenderTargetTexture.cpp" />
     <ClCompile Include="Simulation\SnowflakeMemoryGameScene.cpp" />
     <ClCompile Include="Rendering\Shaders\LightShader.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -115,6 +116,7 @@
     <ClInclude Include="3D Components\Models\CubeModel.h" />
     <ClInclude Include="Rendering\D3D11Renderer.h" />
     <ClInclude Include="Rendering\Shaders\DepthShader.h" />
+    <ClInclude Include="Rendering\RenderTargetTexture.h" />
     <ClInclude Include="Util\FileReader.h" />
     <ClInclude Include="Simulation\SnowflakeMemoryGameScene.h" />
     <ClInclude Include="Rendering\Shaders\LightShader.h" />

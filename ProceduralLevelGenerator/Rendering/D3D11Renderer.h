@@ -18,6 +18,7 @@
 #include "Texture.h"
 #include "RenderTargetTextureCube.h"
 #include "Shaders/DepthShader.h"
+#include "RenderTargetTexture.h"
 
 class D3D11Renderer {
 public:
@@ -86,6 +87,7 @@ private:
     LightShader lightShader;
     DepthShader depthShader;
     RenderTargetTextureCube shadowMap;
+    RenderTargetTexture postProcessingTexture;
 
     PhysicalDeviceDescriptor queryPhysicalDeviceDescriptors();
     void createSwapChainAndDevice(HWND windowHandle);
@@ -96,6 +98,7 @@ private:
     void updateInstanceBuffer(std::vector<Model::Instance> instances);
     void renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix);
     void setBackbufferAsRenderTargetAndClear();
+    void setPostProcessingTextureAsRenderTargetAndClear();
 
     static std::vector<Model::Vertex> getAllVertices(Scene* scene);
     static std::vector<unsigned long> getAllIndices(Scene* scene);

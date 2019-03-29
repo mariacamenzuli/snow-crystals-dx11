@@ -50,6 +50,7 @@ D3D11Renderer::D3D11Renderer(HWND windowHandle,
     depthShader.initialize(device.Get(), deviceContext.Get());
 
     shadowMap.initialize(device.Get(), shadowMapSize);
+    postProcessingTexture.initialize(device.Get(), screenWidth, screenHeight);
 }
 
 D3D11Renderer::~D3D11Renderer() {
@@ -103,6 +104,7 @@ void D3D11Renderer::renderFrame() {
     depthShader.setActive(deviceContext.Get());
     renderShadowMap(pointLightProjectionMatrix);
     setBackbufferAsRenderTargetAndClear();
+    // setPostProcessingTextureAsRenderTargetAndClear();
 
     lightShader.setActive(deviceContext.Get());
     lightShader.updateDepthMapTexture(deviceContext.Get(), &shadowMap);
@@ -164,6 +166,8 @@ void D3D11Renderer::renderFrame() {
             toVisit.push(child);
         }
     }
+
+    // setBackbufferAsRenderTargetAndClear();
 
     // Present the back buffer to the screen since rendering is complete.
     if (vsyncEnabled) {
@@ -647,6 +651,11 @@ void D3D11Renderer::setBackbufferAsRenderTargetAndClear() {
     float backBufferStartingColor[4] = {0.0f, 0.0f, 0.01f, 1.0f};
     deviceContext->ClearRenderTargetView(renderTargetView.Get(), backBufferStartingColor);
     deviceContext->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+}
+
+void D3D11Renderer::setPostProcessingTextureAsRenderTargetAndClear() {
+    postProcessingTexture.setAsRenderTarget(deviceContext.Get(), depthStencilView.Get());
+    postProcessingTexture.clearRenderTarget(deviceContext.Get(), depthStencilView.Get());
 }
 
 std::vector<Model::Vertex> D3D11Renderer::getAllVertices(Scene* scene) {
