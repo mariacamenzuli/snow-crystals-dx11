@@ -13,20 +13,9 @@ SnowflakeMemoryGameScene::SnowflakeMemoryGameScene(const int hexagonLatticeWidth
                                                                         beta(beta),
                                                                         gamma(gamma),
                                                                         pointLight(D3DXVECTOR4(1.0f, 1.0f, 0.9f, 1.0f), D3DXVECTOR4(0.5f, 0.5f, 0.4f, 1.0f)) {
-    cells = new SnowflakeAutomatonCell*[hexagonLatticeWidth];
-    for (int i = 0; i < hexagonLatticeWidth; ++i) {
-        cells[i] = new SnowflakeAutomatonCell[hexagonLatticeHeight];
-    }
-
     rootSceneObject.reset(new SceneObject());
 
     auto world = rootSceneObject->attachChild(std::make_unique<SceneObject>(), "world");
-
-    // const auto cubeModel = modelLoader.getModel(ModelLoader::ModelId::CUBE);
-    // auto background = world->attachChild(std::make_unique<SceneObject>(cubeModel), "background");
-    // background->scale(150.0f, 1.0f, 150.f);
-    // background->rotateX(1.5708f);
-    // background->translate(0, 0, 10);
 
     snowflakeModel = modelLoader.getModel(ModelLoader::ModelId::HEXAGON);
 
@@ -36,83 +25,20 @@ SnowflakeMemoryGameScene::SnowflakeMemoryGameScene(const int hexagonLatticeWidth
     hexLattice->rotateZ(1.5708f);
     hexLattice->rotateY(3.14159f);
 
-    for (int y = 0; y < hexagonLatticeHeight; y++) {
-        int t = y % 2;
-        for (int x = 0; x < hexagonLatticeWidth; x++) {
-            cells[x][y] = {x, y, beta};
-        }
-    }
-
-    for (int y = 0; y < hexagonLatticeHeight; y++) {
-        int t = y % 2;
-        for (int x = 0; x < hexagonLatticeWidth; x++) {
-            if (x > 0) {
-                cells[x][y].neighbours.push_back(&cells[x - 1][y]);
-            }
-
-            if (x < hexagonLatticeWidth - 1) {
-                cells[x][y].neighbours.push_back(&cells[x + 1][y]);
-            }
-
-            if (y > 0) {
-                if (t == 0) {
-                    if (x > 0) {
-                        cells[x][y].neighbours.push_back(&cells[x - 1][y - 1]);
-                    }
-                    cells[x][y].neighbours.push_back(&cells[x][y - 1]);
-                } else {
-                    cells[x][y].neighbours.push_back(&cells[x][y - 1]);
-                    if (x < hexagonLatticeWidth - 1) {
-                        cells[x][y].neighbours.push_back(&cells[x + 1][y - 1]);
-                    }
-                }
-            }
-
-            if (y < hexagonLatticeHeight - 1) {
-                if (t == 0) {
-                    if (x > 0) {
-                        cells[x][y].neighbours.push_back(&cells[x - 1][y + 1]);
-                    }
-                    cells[x][y].neighbours.push_back(&cells[x][y + 1]);
-                } else {
-                    cells[x][y].neighbours.push_back(&cells[x][y + 1]);
-                    if (x < hexagonLatticeWidth - 1) {
-                        cells[x][y].neighbours.push_back(&cells[x + 1][y + 1]);
-                    }
-                }
-            }
-        }
-    }
-
-    // seed ice
-    const int seedX = hexagonLatticeWidth / 2;
-    const int seedY = hexagonLatticeHeight / 2;
-    cells[seedX][seedY].waterVaporValue = ICE;
-    cells[seedX][seedY].nonReceptiveValue = ICE;
-    snowflakeModel->addInstance({calculateCellInstancePosition(seedX, seedY)});
-
-    iceCells.push_back(&cells[seedX][seedY]);
-    for (auto iceCell : iceCells) {
-        for (auto neighbour : iceCell->neighbours) {
-            if (neighbour->waterVaporValue < ICE) {
-                boundaryCells.push_back(neighbour);
-            }
-        }
-    }
-
-    // auto pointLightIndicator = world->attachChild(std::make_unique<SceneObject>(cubeModel));
-    // pointLightIndicator->translate(0.0f, 0.0f, -20.0f);
-    // pointLightIndicator->translate(0.0f, 50.0f, -20.0f);
     pointLight.translate(0.0f, -12.5f, -50.0f);
+
+    std::thread thread(&SnowflakeMemoryGameScene::snowflakeGeneratorThread, this);
+    thread.detach();
 
     srand(time(0));
 }
 
 SnowflakeMemoryGameScene::~SnowflakeMemoryGameScene() {
-    for (int i = 0; i < hexagonLatticeWidth; ++i) {
-        delete[] cells[i];
+    gameState = GameState::SHUTTING_DOWN;
+
+    while(snowflakeState == SnowflakeState::GROWING) {
+        // no-op, waiting for thread to stop
     }
-    delete[] cells;
 };
 
 SceneObject* SnowflakeMemoryGameScene::getRootSceneObject() {
@@ -130,10 +56,10 @@ PointLight* SnowflakeMemoryGameScene::getPointLight() {
 void SnowflakeMemoryGameScene::update(float deltaTime) {
     switch (snowflakeState) {
     case SnowflakeState::GROWING:
-        updateCount++;
-        if (updateCount % automatonStepEveryNthFrame == 0) {
-            progressSnowflakeGrowingAutomaton();
-        }
+        // updateCount++;
+        // if (updateCount % automatonStepEveryNthFrame == 0) {
+            // progressSnowflakeGrowingAutomaton();
+        // }
         break;
     case SnowflakeState::IDLE:
         if (gameState == GameState::SHOWING_SEQUENCE && game.sequenceToDisplay.empty()) {
@@ -245,7 +171,9 @@ D3DXVECTOR3 SnowflakeMemoryGameScene::calculateCellInstancePosition(int x, int y
     return D3DXVECTOR3(y * 16, x * 18 + (y % 2) * 8.5f, 0.0f);
 }
 
-void SnowflakeMemoryGameScene::progressSnowflakeGrowingAutomaton() {
+std::vector<Model::Instance> SnowflakeMemoryGameScene::progressSnowflakeGrowingAutomaton(SnowflakeAutomatonCell** cells) {
+    std::vector<Model::Instance> instances;
+
     for (auto iceCell : iceCells) {
         iceCell->receptiveValue = iceCell->waterVaporValue + gamma;
         iceCell->nonReceptiveValue = 0.0f;
@@ -257,7 +185,6 @@ void SnowflakeMemoryGameScene::progressSnowflakeGrowingAutomaton() {
 
     iceCells.clear();
     boundaryCells.clear();
-    snowflakeModel->clearInstances();
 
     const auto diffusionWeight = alpha / 12.0f;
     for (int y = 0; y < hexagonLatticeHeight; y++) {
@@ -280,7 +207,7 @@ void SnowflakeMemoryGameScene::progressSnowflakeGrowingAutomaton() {
             cells[x][y].nonReceptiveValue = cells[x][y].waterVaporValue;
             if (cells[x][y].waterVaporValue >= ICE) {
                 iceCells.push_back(&cells[x][y]);
-                snowflakeModel->addInstance({ calculateCellInstancePosition(x, y) });
+                instances.push_back({ calculateCellInstancePosition(x, y) });
 
                 for (auto neighbour : cells[x][y].neighbours) {
                     if (neighbour->waterVaporValue < ICE) {
@@ -294,6 +221,8 @@ void SnowflakeMemoryGameScene::progressSnowflakeGrowingAutomaton() {
     if (iceCells.size() == hexagonLatticeHeight * hexagonLatticeHeight) {
         startGame();
     }
+
+    return instances;
 }
 
 void SnowflakeMemoryGameScene::turnSnowflakeRight() {
@@ -318,4 +247,90 @@ void SnowflakeMemoryGameScene::generateTurnSequence() {
         game.sequenceInputExpected.push(turnLeft);
     }
     gameState = GameState::SHOWING_SEQUENCE;
+}
+
+void SnowflakeMemoryGameScene::snowflakeGeneratorThread() {
+    SnowflakeAutomatonCell** cells = new SnowflakeAutomatonCell*[hexagonLatticeWidth];
+    for (int i = 0; i < hexagonLatticeWidth; ++i) {
+        cells[i] = new SnowflakeAutomatonCell[hexagonLatticeHeight];
+    }
+
+    for (int y = 0; y < hexagonLatticeHeight; y++) {
+        int t = y % 2;
+        for (int x = 0; x < hexagonLatticeWidth; x++) {
+            cells[x][y] = { x, y, beta };
+        }
+    }
+
+    for (int y = 0; y < hexagonLatticeHeight; y++) {
+        int t = y % 2;
+        for (int x = 0; x < hexagonLatticeWidth; x++) {
+            if (x > 0) {
+                cells[x][y].neighbours.push_back(&cells[x - 1][y]);
+            }
+
+            if (x < hexagonLatticeWidth - 1) {
+                cells[x][y].neighbours.push_back(&cells[x + 1][y]);
+            }
+
+            if (y > 0) {
+                if (t == 0) {
+                    if (x > 0) {
+                        cells[x][y].neighbours.push_back(&cells[x - 1][y - 1]);
+                    }
+                    cells[x][y].neighbours.push_back(&cells[x][y - 1]);
+                } else {
+                    cells[x][y].neighbours.push_back(&cells[x][y - 1]);
+                    if (x < hexagonLatticeWidth - 1) {
+                        cells[x][y].neighbours.push_back(&cells[x + 1][y - 1]);
+                    }
+                }
+            }
+
+            if (y < hexagonLatticeHeight - 1) {
+                if (t == 0) {
+                    if (x > 0) {
+                        cells[x][y].neighbours.push_back(&cells[x - 1][y + 1]);
+                    }
+                    cells[x][y].neighbours.push_back(&cells[x][y + 1]);
+                } else {
+                    cells[x][y].neighbours.push_back(&cells[x][y + 1]);
+                    if (x < hexagonLatticeWidth - 1) {
+                        cells[x][y].neighbours.push_back(&cells[x + 1][y + 1]);
+                    }
+                }
+            }
+        }
+    }
+
+    // seed ice
+    const int seedX = hexagonLatticeWidth / 2;
+    const int seedY = hexagonLatticeHeight / 2;
+    cells[seedX][seedY].waterVaporValue = ICE;
+    cells[seedX][seedY].nonReceptiveValue = ICE;
+    snowflakeModel->addInstance({ calculateCellInstancePosition(seedX, seedY) });
+
+    iceCells.push_back(&cells[seedX][seedY]);
+    for (auto iceCell : iceCells) {
+        for (auto neighbour : iceCell->neighbours) {
+            if (neighbour->waterVaporValue < ICE) {
+                boundaryCells.push_back(neighbour);
+            }
+        }
+    }
+
+    while (snowflakeState == SnowflakeState::GROWING) {
+        if (gameState == GameState::SHUTTING_DOWN) {
+            snowflakeState = SnowflakeState::IDLE;
+            continue;
+        }
+
+        auto updatedInstances = progressSnowflakeGrowingAutomaton(cells);
+        snowflakeModel->overwriteInstances(std::move(updatedInstances));
+    }
+
+    for (int i = 0; i < hexagonLatticeWidth; ++i) {
+        delete[] cells[i];
+    }
+    delete[] cells;
 }

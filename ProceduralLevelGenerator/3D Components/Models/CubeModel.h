@@ -17,6 +17,7 @@ public:
     bool isInstanced() override;
     void addInstance(Instance instance) override;
     void clearInstances() override;
+    void overwriteInstances(std::vector<Instance> instances) override;
 
 private:
     const int vertexCount = 36;

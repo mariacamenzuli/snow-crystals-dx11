@@ -38,4 +38,5 @@ public:
     virtual bool isInstanced() = 0;
     virtual void addInstance(Instance instance) = 0;
     virtual void clearInstances() = 0;
+    virtual void overwriteInstances(std::vector<Instance> instances) = 0;
 };

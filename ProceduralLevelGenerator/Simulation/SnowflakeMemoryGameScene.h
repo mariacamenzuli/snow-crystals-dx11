@@ -4,6 +4,7 @@
 #include "ModelLoader.h"
 #include "../Util/UserInputReader.h"
 #include <queue>
+#include <thread>
 
 class SnowflakeMemoryGameScene : public Scene {
 public:
@@ -62,7 +63,8 @@ private:
     enum class GameState {
         INIT,
         SHOWING_SEQUENCE,
-        ACCEPTING_SEQUENCE
+        ACCEPTING_SEQUENCE,
+        SHUTTING_DOWN
     };
 
     constexpr const static float TURN_SPEED = 1.25f;
@@ -88,7 +90,7 @@ private:
     PointLight pointLight;
 
     Model* snowflakeModel;
-    SnowflakeAutomatonCell** cells;
+    // SnowflakeAutomatonCell** cells;
     std::vector<SnowflakeAutomatonCell*> iceCells;
     std::vector<SnowflakeAutomatonCell*> boundaryCells;
 
@@ -97,8 +99,10 @@ private:
     float angleTurned = 0;
 
     D3DXVECTOR3 calculateCellInstancePosition(int x, int y);
-    void progressSnowflakeGrowingAutomaton();
+    std::vector<Model::Instance> progressSnowflakeGrowingAutomaton(SnowflakeAutomatonCell** cells);
     void turnSnowflakeRight();
     void turnSnowflakeLeft();
     void generateTurnSequence();
+
+    void snowflakeGeneratorThread();
 };

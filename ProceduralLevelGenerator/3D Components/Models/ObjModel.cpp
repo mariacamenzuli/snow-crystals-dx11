@@ -173,6 +173,10 @@ void ObjModel::clearInstances() {
     instances.clear();
 }
 
+void ObjModel::overwriteInstances(std::vector<Instance> instances) {
+    this->instances = instances;
+}
+
 bool ObjModel::lineStartsWith(std::string text, std::string prefix) {
     return text.find(prefix) == 0;
 }

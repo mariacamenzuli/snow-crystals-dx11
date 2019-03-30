@@ -232,3 +232,7 @@ void CubeModel::addInstance(Instance instance) {
 void CubeModel::clearInstances() {
     instances.clear();
 }
+
+void CubeModel::overwriteInstances(std::vector<Instance> instances) {
+    this->instances = instances;
+}
