@@ -10,7 +10,6 @@ class SnowflakeMemoryGameScene : public Scene {
 public:
     SnowflakeMemoryGameScene(const int hexagonLatticeWidth,
                              const int hexagonLatticeHeight,
-                             const int automatonStepEveryNthFrame,
                              const float alpha,
                              const float beta,
                              const float gamma);
@@ -21,7 +20,6 @@ public:
     PointLight* getPointLight() override;
     void update(float deltaTime);
 
-    void incrementAutomatonStepEveryNthFrame(int increment);
     void incrementAlpha(float increment);
     void incrementGamma(float increment);
     void startGame();
@@ -79,8 +77,6 @@ private:
     int hexagonLatticeWidth;
     int hexagonLatticeHeight;
 
-    int automatonStepEveryNthFrame;
-
     float alpha;
     float beta;
     float gamma;
@@ -97,6 +93,8 @@ private:
     int updateCount = 0;
 
     float angleTurned = 0;
+
+    bool progressSimulation = false;
 
     D3DXVECTOR3 calculateCellInstancePosition(int x, int y);
     std::vector<Model::Instance> progressSnowflakeGrowingAutomaton(SnowflakeAutomatonCell** cells);

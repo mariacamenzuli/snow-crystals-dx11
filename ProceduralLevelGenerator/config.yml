@@ -12,12 +12,28 @@ shadowmap_size: 1080
 
 #  --- SNOW CRYSTAL GENERATOR ---
 
-hexagon_lattice_width: 100
-hexagon_lattice_height: 100
+hexagon_lattice_width: 200
+hexagon_lattice_height: 200
 
 # increase this to slow the automton down if it is growing too quickly
 automaton_step_every_nth_frame: 1
 
-alpha: 1.0 # weighting factor
-beta: 0.4 # background level
-gamma: 0.000005 # growth constant
+# alpha is the weighting factor
+# beta is the background level
+# gamma is the growth constant
+
+alpha: 1.0
+beta: 0.4
+gamma: 0.000005
+
+# alpha: 1.0
+# beta: 0.3
+# gamma: 0.0035
+
+# alpha: 0.5
+# beta: 0.9
+# gamma: 0.000035
+
+# alpha: 1.0
+# beta: 0.9
+# gamma: 0.05

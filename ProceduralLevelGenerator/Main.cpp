@@ -90,11 +90,11 @@ void readUserInput(UserInputReader& userInput,
     }
 
     if (userInput.isF3Pressed()) {
-        gameScene.incrementAutomatonStepEveryNthFrame(1);
+        gameScene.incrementAlpha(1);
     }
 
     if (userInput.isF4Pressed()) {
-        gameScene.incrementAutomatonStepEveryNthFrame(-1);
+        gameScene.incrementAlpha(-1);
     }
 
     if (userInput.isRPressed()) {
@@ -142,7 +142,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 
         SnowflakeMemoryGameScene scene(config.getHexagonLatticeWidth(),
                                        config.getHexagonLatticeHeight(),
-                                       config.getAutomatonStepEveryNthFrame(),
                                        config.getAlpha(),
                                        config.getBeta(),
                                        config.getGamma());

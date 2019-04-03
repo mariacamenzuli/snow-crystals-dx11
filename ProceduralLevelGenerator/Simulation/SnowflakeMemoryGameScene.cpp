@@ -3,12 +3,10 @@
 
 SnowflakeMemoryGameScene::SnowflakeMemoryGameScene(const int hexagonLatticeWidth,
                                                    const int hexagonLatticeHeight,
-                                                   const int automatonStepEveryNthFrame,
                                                    const float alpha,
                                                    const float beta,
                                                    const float gamma) : hexagonLatticeWidth(hexagonLatticeWidth),
                                                                         hexagonLatticeHeight(hexagonLatticeHeight),
-                                                                        automatonStepEveryNthFrame(automatonStepEveryNthFrame),
                                                                         alpha(alpha),
                                                                         beta(beta),
                                                                         gamma(gamma),
@@ -56,10 +54,7 @@ PointLight* SnowflakeMemoryGameScene::getPointLight() {
 void SnowflakeMemoryGameScene::update(float deltaTime) {
     switch (snowflakeState) {
     case SnowflakeState::GROWING:
-        // updateCount++;
-        // if (updateCount % automatonStepEveryNthFrame == 0) {
-            // progressSnowflakeGrowingAutomaton();
-        // }
+        progressSimulation = true;
         break;
     case SnowflakeState::IDLE:
         if (gameState == GameState::SHOWING_SEQUENCE && game.sequenceToDisplay.empty()) {
@@ -99,10 +94,6 @@ void SnowflakeMemoryGameScene::update(float deltaTime) {
         break;
     default: ;
     }
-}
-
-void SnowflakeMemoryGameScene::incrementAutomatonStepEveryNthFrame(int increment) {
-    automatonStepEveryNthFrame = max(1, automatonStepEveryNthFrame + increment);
 }
 
 void SnowflakeMemoryGameScene::incrementAlpha(float increment) {
@@ -325,8 +316,11 @@ void SnowflakeMemoryGameScene::snowflakeGeneratorThread() {
             continue;
         }
 
-        auto updatedInstances = progressSnowflakeGrowingAutomaton(cells);
-        snowflakeModel->overwriteInstances(std::move(updatedInstances));
+        if (progressSimulation) {
+            auto updatedInstances = progressSnowflakeGrowingAutomaton(cells);
+            snowflakeModel->overwriteInstances(std::move(updatedInstances));
+            progressSimulation = false;
+        }
     }
 
     for (int i = 0; i < hexagonLatticeWidth; ++i) {
