@@ -101,7 +101,7 @@
     <ClCompile Include="Rendering\Shaders\LightShader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="3D Components\Material.cpp" />
-    <ClCompile Include="TextureShader.cpp" />
+    <ClCompile Include="Rendering\Shaders\TextureShader.cpp" />
     <ClCompile Include="Util\MetricsTracker.cpp" />
     <ClCompile Include="Simulation\ModelLoader.cpp" />
     <ClCompile Include="3D Components\Models\ObjModel.cpp" />
@@ -120,7 +120,7 @@
     <ClInclude Include="Rendering\D3D11Renderer.h" />
     <ClInclude Include="Rendering\Shaders\DepthShader.h" />
     <ClInclude Include="Rendering\RenderTargetTexture.h" />
-    <ClInclude Include="TextureShader.h" />
+    <ClInclude Include="Rendering\Shaders\TextureShader.h" />
     <ClInclude Include="Util\FileReader.h" />
     <ClInclude Include="Simulation\SnowflakeMemoryGameScene.h" />
     <ClInclude Include="Rendering\Shaders\LightShader.h" />

@@ -20,7 +20,7 @@
 #include "Shaders/DepthShader.h"
 #include "RenderTargetTexture.h"
 #include "../FullscreenPostProcessingDisplay.h"
-#include "../TextureShader.h"
+#include "Shaders/TextureShader.h"
 
 class D3D11Renderer {
 public:

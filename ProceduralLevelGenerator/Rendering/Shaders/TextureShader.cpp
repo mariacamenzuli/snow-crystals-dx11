@@ -1,5 +1,7 @@
+#include <stdexcept>
+
 #include "TextureShader.h"
-#include "Util/FileReader.h"
+#include "../../Util/FileReader.h"
 
 TextureShader::TextureShader() {
 }

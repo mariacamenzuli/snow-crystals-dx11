@@ -113,7 +113,7 @@
     <ClCompile Include="FullscreenPostProcessingDisplay.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="TextureShader.cpp">
+    <ClCompile Include="Rendering\Shaders\TextureShader.cpp">
       <Filter>Source Files\Rendering\Shaders</Filter>
     </ClCompile>
   </ItemGroup>
@@ -184,7 +184,7 @@
     <ClInclude Include="FullscreenPostProcessingDisplay.h">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="TextureShader.h">
+    <ClInclude Include="Rendering\Shaders\TextureShader.h">
       <Filter>Header Files\Rendering\Shaders</Filter>
     </ClInclude>
   </ItemGroup>
