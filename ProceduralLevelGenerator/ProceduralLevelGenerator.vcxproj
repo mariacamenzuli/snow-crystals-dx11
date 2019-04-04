@@ -91,6 +91,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationConfig.cpp" />
+    <ClCompile Include="FullscreenPostProcessingDisplay.cpp" />
     <ClCompile Include="Rendering\Camera.cpp" />
     <ClCompile Include="3D Components\Models\CubeModel.cpp" />
     <ClCompile Include="Rendering\D3D11Renderer.cpp" />
@@ -100,6 +101,7 @@
     <ClCompile Include="Rendering\Shaders\LightShader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="3D Components\Material.cpp" />
+    <ClCompile Include="TextureShader.cpp" />
     <ClCompile Include="Util\MetricsTracker.cpp" />
     <ClCompile Include="Simulation\ModelLoader.cpp" />
     <ClCompile Include="3D Components\Models\ObjModel.cpp" />
@@ -112,11 +114,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationConfig.h" />
+    <ClInclude Include="FullscreenPostProcessingDisplay.h" />
     <ClInclude Include="Rendering\Camera.h" />
     <ClInclude Include="3D Components\Models\CubeModel.h" />
     <ClInclude Include="Rendering\D3D11Renderer.h" />
     <ClInclude Include="Rendering\Shaders\DepthShader.h" />
     <ClInclude Include="Rendering\RenderTargetTexture.h" />
+    <ClInclude Include="TextureShader.h" />
     <ClInclude Include="Util\FileReader.h" />
     <ClInclude Include="Simulation\SnowflakeMemoryGameScene.h" />
     <ClInclude Include="Rendering\Shaders\LightShader.h" />
@@ -152,6 +156,14 @@
     <FxCompile Include="Rendering\Shaders\light-vertex.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">transformToScreenSpace</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Rendering\Shaders\texture-pixel.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Rendering\Shaders\texture-vertex.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
     </FxCompile>
   </ItemGroup>

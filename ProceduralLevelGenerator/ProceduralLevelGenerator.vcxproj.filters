@@ -110,6 +110,12 @@
     <ClCompile Include="Rendering\RenderTargetTexture.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="FullscreenPostProcessingDisplay.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureShader.cpp">
+      <Filter>Source Files\Rendering\Shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationConfig.h">
@@ -175,6 +181,12 @@
     <ClInclude Include="Rendering\RenderTargetTexture.h">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="FullscreenPostProcessingDisplay.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureShader.h">
+      <Filter>Header Files\Rendering\Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Rendering\Shaders\depth-pixel.hlsl">
@@ -189,6 +201,8 @@
     <FxCompile Include="Rendering\Shaders\light-vertex.hlsl">
       <Filter>Shader Files</Filter>
     </FxCompile>
+    <FxCompile Include="Rendering\Shaders\texture-vertex.hlsl" />
+    <FxCompile Include="Rendering\Shaders\texture-pixel.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config.yml">

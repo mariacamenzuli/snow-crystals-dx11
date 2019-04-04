@@ -43,14 +43,21 @@ D3D11Renderer::D3D11Renderer(HWND windowHandle,
     float fieldOfView = static_cast<float>(D3DX_PI) / 4.0f;
     float screenAspect = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
 
-    // Create the projection matrix for 3D rendering.
+    // Create the perspective projection matrix for 3D rendering.
     D3DXMatrixPerspectiveFovLH(&projectionMatrix, fieldOfView, screenAspect, screenNear, screenDepth);
 
-    lightShader.initialize(device.Get(), deviceContext.Get());
-    depthShader.initialize(device.Get(), deviceContext.Get());
+    // Create an orthographic projection matrix for 2D rendering.
+    D3DXMatrixOrthoLH(&ortographicMatrix, static_cast<float>(screenWidth), static_cast<float>(screenHeight), screenNear, screenDepth);
+
+    lightShader.initialize(device.Get());
+    depthShader.initialize(device.Get());
+    textureShader.initialize(device.Get());
 
     shadowMap.initialize(device.Get(), shadowMapSize);
     postProcessingTexture.initialize(device.Get(), screenWidth, screenHeight);
+    fullscreenPostProcessingDisplay.initialize(device.Get(), screenWidth, screenHeight);
+
+    createPostProcessingViewMatrix();
 }
 
 D3D11Renderer::~D3D11Renderer() {
@@ -62,7 +69,7 @@ D3D11Renderer::~D3D11Renderer() {
 
 void D3D11Renderer::setScene(Scene* scene) {
     this->scene = scene;
-    setupVertexAndIndexBuffers();
+    setupVertexAndIndexBuffersForScene();
 
     std::stack<SceneObject*> toVisit;
     toVisit.push(scene->getRootSceneObject());
@@ -101,10 +108,11 @@ void D3D11Renderer::renderFrame() {
 
     D3DXMATRIX* pointLightProjectionMatrix = scene->getPointLight()->getProjectionMatrix();
 
+    setSceneGeometryBuffersForIA();
     depthShader.setActive(deviceContext.Get());
     renderShadowMap(pointLightProjectionMatrix);
-    setBackbufferAsRenderTargetAndClear();
-    // setPostProcessingTextureAsRenderTargetAndClear();
+    // setBackbufferAsRenderTargetAndClear();
+    setPostProcessingTextureAsRenderTargetAndClear();
 
     lightShader.setActive(deviceContext.Get());
     lightShader.updateDepthMapTexture(deviceContext.Get(), &shadowMap);
@@ -167,7 +175,24 @@ void D3D11Renderer::renderFrame() {
         }
     }
 
-    // setBackbufferAsRenderTargetAndClear();
+    setBackbufferAsRenderTargetAndClear();
+
+    turnZBufferOff();
+
+    fullscreenPostProcessingDisplay.setDisplayGeometryBuffersForIA(deviceContext.Get());
+
+    textureShader.setActive(deviceContext.Get());
+
+    D3DXMATRIX identitityMatrix;
+    D3DXMatrixIdentity(&identitityMatrix);
+    textureShader.updateTransformationMatricesBuffer(deviceContext.Get(),
+                                                     identitityMatrix,
+                                                     postProcessingDisplayViewMatrix,
+                                                     ortographicMatrix);
+    textureShader.updateTexture(deviceContext.Get(), postProcessingTexture.getTextureResource());
+    deviceContext->DrawIndexed(6, 0, 0);
+
+    turnZBufferOn();
 
     // Present the back buffer to the screen since rendering is complete.
     if (vsyncEnabled) {
@@ -366,6 +391,14 @@ void D3D11Renderer::createDepthAndStencilBuffer() {
         throw D3D11RendererException("failed to create depth stencil state", result);
     }
 
+    // Now create a second depth stencil state which turns off the Z buffer for 2D rendering.  The only difference is 
+    // that DepthEnable is set to false, all other parameters are the same as the other depth stencil state.
+    depthStencilDesc.DepthEnable = false;
+    result = device->CreateDepthStencilState(&depthStencilDesc, depthDisabledStencilState.GetAddressOf());
+    if (FAILED(result)) {
+        throw D3D11RendererException("failed to create depth stencil state for 2D rendering", result);
+    }
+
     deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 1);
 
     D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
@@ -411,7 +444,7 @@ void D3D11Renderer::setupViewport() {
     viewport.TopLeftY = 0.0f;
 }
 
-void D3D11Renderer::setupVertexAndIndexBuffers() {
+void D3D11Renderer::setupVertexAndIndexBuffersForScene() {
     D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc, instanceBufferDesc;
     D3D11_SUBRESOURCE_DATA vertexData, indexData, instanceData;
     HRESULT result;
@@ -432,7 +465,7 @@ void D3D11Renderer::setupVertexAndIndexBuffers() {
     vertexData.SysMemSlicePitch = 0;
 
     // Now create the vertex buffer.
-    result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
+    result = device->CreateBuffer(&vertexBufferDesc, &vertexData, sceneVertexBuffer.GetAddressOf());
     if (FAILED(result)) {
         throw std::runtime_error("Failed to create vertex buffer for scene.");
     }
@@ -456,16 +489,10 @@ void D3D11Renderer::setupVertexAndIndexBuffers() {
     instanceData.SysMemSlicePitch = 0;
 
     // Create the instance buffer.
-    result = device->CreateBuffer(&instanceBufferDesc, &instanceData, &instanceBuffer);
+    result = device->CreateBuffer(&instanceBufferDesc, &instanceData, sceneInstanceBuffer.GetAddressOf());
     if (FAILED(result)) {
         throw std::runtime_error("Failed to create instance buffer for scene.");
     }
-
-    // Bind the vertex and instance buffers to the input-assembler stage.
-    unsigned int stride[2] = {sizeof(Model::Vertex), sizeof(Model::Instance)};
-    unsigned int offset[2] = {0, 0};
-    ID3D11Buffer* bufferPointers[2] = {vertexBuffer.Get(), instanceBuffer.Get()};
-    deviceContext->IASetVertexBuffers(0, 2, bufferPointers, stride, offset);
 
     auto sceneIndices = getAllIndices(scene);
 
@@ -483,23 +510,17 @@ void D3D11Renderer::setupVertexAndIndexBuffers() {
     indexData.SysMemSlicePitch = 0;
 
     // Create the index buffer.
-    result = device->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
+    result = device->CreateBuffer(&indexBufferDesc, &indexData, sceneIndexBuffer.GetAddressOf());
     if (FAILED(result)) {
         throw std::runtime_error("Failed to create index buffer for scene.");
     }
-
-    // Bind the index buffer to the input-assembler stage.
-    deviceContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
-    // Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-    deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 void D3D11Renderer::updateInstanceBuffer(std::vector<Model::Instance> instances) {
     D3D11_MAPPED_SUBRESOURCE mappedResource;
-    deviceContext->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    deviceContext->Map(sceneInstanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     memcpy(mappedResource.pData, instances.data(), sizeof(Model::Instance) * instances.size());
-    deviceContext->Unmap(instanceBuffer.Get(), 0);
+    deviceContext->Unmap(sceneInstanceBuffer.Get(), 0);
 }
 
 void D3D11Renderer::renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix) {
@@ -656,6 +677,52 @@ void D3D11Renderer::setBackbufferAsRenderTargetAndClear() {
 void D3D11Renderer::setPostProcessingTextureAsRenderTargetAndClear() {
     postProcessingTexture.setAsRenderTarget(deviceContext.Get(), depthStencilView.Get());
     postProcessingTexture.clearRenderTarget(deviceContext.Get(), depthStencilView.Get());
+}
+
+void D3D11Renderer::setSceneGeometryBuffersForIA() {
+    // Bind the vertex and instance buffers to the input-assembler stage.
+    unsigned int stride[2] = { sizeof(Model::Vertex), sizeof(Model::Instance) };
+    unsigned int offset[2] = { 0, 0 };
+    ID3D11Buffer* bufferPointers[2] = { sceneVertexBuffer.Get(), sceneInstanceBuffer.Get() };
+    deviceContext->IASetVertexBuffers(0, 2, bufferPointers, stride, offset);
+
+    // Bind the index buffer to the input-assembler stage.
+    deviceContext->IASetIndexBuffer(sceneIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+    // Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
+    deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void D3D11Renderer::turnZBufferOn() {
+    deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 1);
+}
+
+void D3D11Renderer::turnZBufferOff() {
+    deviceContext->OMSetDepthStencilState(depthDisabledStencilState.Get(), 1);
+}
+
+void D3D11Renderer::createPostProcessingViewMatrix() {
+    D3DXVECTOR3 up, position, lookAt;
+    D3DXMATRIX rotationMatrix;
+
+    up.x = 0.0f;
+    up.y = 1.0f;
+    up.z = 0.0f;
+
+    position.x = 0;
+    position.y = 0;
+    position.z = -10;
+
+    lookAt.x = 0.0f;
+    lookAt.y = 0.0f;
+    lookAt.z = 1.0f;
+
+    D3DXMatrixRotationYawPitchRoll(&rotationMatrix, 0, 0, 0);
+    D3DXVec3TransformCoord(&lookAt, &lookAt, &rotationMatrix);
+    D3DXVec3TransformCoord(&up, &up, &rotationMatrix);
+    lookAt = position + lookAt;
+
+    D3DXMatrixLookAtLH(&postProcessingDisplayViewMatrix, &position, &lookAt, &up);
 }
 
 std::vector<Model::Vertex> D3D11Renderer::getAllVertices(Scene* scene) {

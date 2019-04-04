@@ -5,7 +5,7 @@ DepthShader::DepthShader() = default;
 
 DepthShader::~DepthShader() = default;
 
-void DepthShader::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
+void DepthShader::initialize(ID3D11Device* device) {
     setupVertexShader(device);
     setupPixelShader(device);
 }

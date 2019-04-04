@@ -13,7 +13,7 @@ public:
     LightShader();
     ~LightShader();
 
-    void initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
+    void initialize(ID3D11Device* device);
     void setActive(ID3D11DeviceContext* deviceContext);
     void updateTransformationMatricesBuffer(ID3D11DeviceContext* deviceContext,
                                             D3DXMATRIX objectWorldMatrix,

@@ -8,7 +8,7 @@ LightShader::LightShader() = default;
 
 LightShader::~LightShader() = default;
 
-void LightShader::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
+void LightShader::initialize(ID3D11Device* device) {
     setupVertexShader(device);
     setupPixelShader(device);
 }

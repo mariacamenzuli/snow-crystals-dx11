@@ -19,6 +19,8 @@
 #include "RenderTargetTextureCube.h"
 #include "Shaders/DepthShader.h"
 #include "RenderTargetTexture.h"
+#include "../FullscreenPostProcessingDisplay.h"
+#include "../TextureShader.h"
 
 class D3D11Renderer {
 public:
@@ -75,30 +77,39 @@ private:
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> renderTargetView;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> depthStencilBuffer;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthDisabledStencilState;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthStencilView;
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterState;
     D3D11_VIEWPORT viewport;
 
-    Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
-    Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;
-    Microsoft::WRL::ComPtr<ID3D11Buffer> instanceBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> sceneVertexBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> sceneIndexBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> sceneInstanceBuffer;
 
     D3DXMATRIX projectionMatrix;
+    D3DXMATRIX ortographicMatrix;
     LightShader lightShader;
     DepthShader depthShader;
+    TextureShader textureShader;
     RenderTargetTextureCube shadowMap;
     RenderTargetTexture postProcessingTexture;
+    FullscreenPostProcessingDisplay fullscreenPostProcessingDisplay;
+    D3DXMATRIX postProcessingDisplayViewMatrix;
 
     PhysicalDeviceDescriptor queryPhysicalDeviceDescriptors();
     void createSwapChainAndDevice(HWND windowHandle);
     void createDepthAndStencilBuffer();
     void createRasterizerState();
     void setupViewport();
-    void setupVertexAndIndexBuffers();
+    void setupVertexAndIndexBuffersForScene();
     void updateInstanceBuffer(std::vector<Model::Instance> instances);
     void renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix);
     void setBackbufferAsRenderTargetAndClear();
     void setPostProcessingTextureAsRenderTargetAndClear();
+    void setSceneGeometryBuffersForIA();
+    void turnZBufferOn();
+    void turnZBufferOff();
+    void createPostProcessingViewMatrix();
 
     static std::vector<Model::Vertex> getAllVertices(Scene* scene);
     static std::vector<unsigned long> getAllIndices(Scene* scene);
