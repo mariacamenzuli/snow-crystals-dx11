@@ -102,7 +102,7 @@ private:
     void createRasterizerState();
     void setupViewport();
     void setupVertexAndIndexBuffersForScene();
-    void updateInstanceBuffer(std::vector<Model::Instance> instances);
+    void updateInstanceBuffer(std::vector<Model::Instance>* instances);
     void renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix);
     void setBackbufferAsRenderTargetAndClear();
     void setPostProcessingTextureAsRenderTargetAndClear();

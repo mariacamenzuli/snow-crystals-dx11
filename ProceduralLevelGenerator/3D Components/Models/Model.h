@@ -33,7 +33,7 @@ public:
     virtual int getInstanceCount() = 0;
     virtual Vertex* getVertices() = 0;
     virtual unsigned long* getIndices() = 0;
-    virtual std::vector<Instance> getInstances() = 0;
+    virtual std::vector<Instance>* getInstances() = 0;
     virtual std::vector<MaterialIndexRange> getMaterialIndexRanges() = 0;
     virtual bool isInstanced() = 0;
     virtual void addInstance(Instance instance) = 0;

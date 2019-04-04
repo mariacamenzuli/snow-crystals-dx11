@@ -53,14 +53,26 @@ void RenderTargetTexture::initialize(ID3D11Device* device, int width, int height
     if (FAILED(result)) {
         throw std::runtime_error("Failed to create shader resource view for render target texture.");
     }
+
+    viewport.Width = static_cast<float>(width);
+    viewport.Height = static_cast<float>(height);
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+    viewport.TopLeftX = 0.0f;
+    viewport.TopLeftY = 0.0f;
 }
 
 void RenderTargetTexture::setAsRenderTarget(ID3D11DeviceContext* deviceContext, ID3D11DepthStencilView* depthStencilView) {
     deviceContext->OMSetRenderTargets(1, renderTargetView.GetAddressOf(), depthStencilView);
+    deviceContext->RSSetViewports(1, &viewport);
 }
 
 void RenderTargetTexture::clearRenderTarget(ID3D11DeviceContext* deviceContext, ID3D11DepthStencilView* depthStencilView) {
     float startingValues[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
     deviceContext->ClearRenderTargetView(renderTargetView.Get(), startingValues);
     deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+}
+
+void RenderTargetTexture::saveToFile(ID3D11DeviceContext* deviceContext) {
+    HRESULT result = D3DX11SaveTextureToFile(deviceContext, renderTargetTexture.Get(), D3DX11_IFF_DDS, L"scene.dds");
 }

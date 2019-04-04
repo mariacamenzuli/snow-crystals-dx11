@@ -209,8 +209,8 @@ unsigned long* CubeModel::getIndices() {
     return indices;
 }
 
-std::vector<Model::Instance> CubeModel::getInstances() {
-    return instances;
+std::vector<Model::Instance>* CubeModel::getInstances() {
+    return &instances;
 }
 
 std::vector<Model::MaterialIndexRange> CubeModel::getMaterialIndexRanges() {

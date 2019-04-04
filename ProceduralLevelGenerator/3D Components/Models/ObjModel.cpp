@@ -149,8 +149,8 @@ unsigned long* ObjModel::getIndices() {
     return indices.data();
 }
 
-std::vector<Model::Instance> ObjModel::getInstances() {
-    return instances;
+std::vector<Model::Instance>* ObjModel::getInstances() {
+    return &instances;
 }
 
 std::vector<Model::MaterialIndexRange> ObjModel::getMaterialIndexRanges() {

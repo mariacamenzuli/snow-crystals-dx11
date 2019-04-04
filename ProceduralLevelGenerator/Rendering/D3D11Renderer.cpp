@@ -176,13 +176,13 @@ void D3D11Renderer::renderFrame() {
     }
 
     setBackbufferAsRenderTargetAndClear();
-
+    
     turnZBufferOff();
-
+    
     fullscreenPostProcessingDisplay.setDisplayGeometryBuffersForIA(deviceContext.Get());
-
+    
     textureShader.setActive(deviceContext.Get());
-
+    
     D3DXMATRIX identitityMatrix;
     D3DXMatrixIdentity(&identitityMatrix);
     textureShader.updateTransformationMatricesBuffer(deviceContext.Get(),
@@ -191,7 +191,7 @@ void D3D11Renderer::renderFrame() {
                                                      ortographicMatrix);
     textureShader.updateTexture(deviceContext.Get(), postProcessingTexture.getTextureResource());
     deviceContext->DrawIndexed(6, 0, 0);
-
+    
     turnZBufferOn();
 
     // Present the back buffer to the screen since rendering is complete.
@@ -516,10 +516,10 @@ void D3D11Renderer::setupVertexAndIndexBuffersForScene() {
     }
 }
 
-void D3D11Renderer::updateInstanceBuffer(std::vector<Model::Instance> instances) {
+void D3D11Renderer::updateInstanceBuffer(std::vector<Model::Instance>* instances) {
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     deviceContext->Map(sceneInstanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    memcpy(mappedResource.pData, instances.data(), sizeof(Model::Instance) * instances.size());
+    memcpy(mappedResource.pData, instances->data(), sizeof(Model::Instance) * instances->size());
     deviceContext->Unmap(sceneInstanceBuffer.Get(), 0);
 }
 

@@ -11,7 +11,7 @@ public:
     int getIndexCount() override;
     Vertex* getVertices() override;
     unsigned long* getIndices() override;
-    std::vector<Instance> getInstances() override;
+    std::vector<Instance>* getInstances() override;
     std::vector<MaterialIndexRange> getMaterialIndexRanges() override;
     int getInstanceCount() override;
     bool isInstanced() override;
