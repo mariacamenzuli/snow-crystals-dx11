@@ -47,14 +47,18 @@ D3D11Renderer::D3D11Renderer(HWND windowHandle,
     D3DXMatrixPerspectiveFovLH(&projectionMatrix, fieldOfView, screenAspect, screenNear, screenDepth);
 
     // Create an orthographic projection matrix for 2D rendering.
-    D3DXMatrixOrthoLH(&ortographicMatrix, static_cast<float>(screenWidth), static_cast<float>(screenHeight), screenNear, screenDepth);
+    D3DXMatrixOrthoLH(&orthographicMatrix, static_cast<float>(screenWidth), static_cast<float>(screenHeight), screenNear, screenDepth);
+
+    D3DXMatrixIdentity(&identityMatrix);
 
     lightShader.initialize(device.Get());
     depthShader.initialize(device.Get());
     textureShader.initialize(device.Get());
+    convolutionShader.initialize(device.Get());
 
     shadowMap.initialize(device.Get(), shadowMapSize);
-    postProcessingTexture.initialize(device.Get(), screenWidth, screenHeight);
+    postProcessingStartTexture.initialize(device.Get(), screenWidth, screenHeight);
+    convolutionTexture.initialize(device.Get(), screenWidth, screenHeight);
     fullscreenPostProcessingDisplay.initialize(device.Get(), screenWidth, screenHeight);
 
     createPostProcessingViewMatrix();
@@ -112,7 +116,7 @@ void D3D11Renderer::renderFrame() {
     depthShader.setActive(deviceContext.Get());
     renderShadowMap(pointLightProjectionMatrix);
     // setBackbufferAsRenderTargetAndClear();
-    setPostProcessingTextureAsRenderTargetAndClear();
+    setTextureAsRenderTargetAndClear(&postProcessingStartTexture);
 
     lightShader.setActive(deviceContext.Get());
     lightShader.updateDepthMapTexture(deviceContext.Get(), &shadowMap);
@@ -175,21 +179,33 @@ void D3D11Renderer::renderFrame() {
         }
     }
 
+    // POST PROCESSING
+
+    turnZBufferOff();
+    fullscreenPostProcessingDisplay.setDisplayGeometryBuffersForIA(deviceContext.Get());
+
+    // CONVOLUTION
+
+    setTextureAsRenderTargetAndClear(&convolutionTexture);
+    convolutionShader.setActive(deviceContext.Get());
+    convolutionShader.updateTransformationMatricesBuffer(deviceContext.Get(),
+                                                         identityMatrix,
+                                                         postProcessingDisplayViewMatrix,
+                                                         orthographicMatrix);
+    convolutionShader.updateTexture(deviceContext.Get(), postProcessingStartTexture.getTextureResource());
+    convolutionShader.updateScreenSizeBuffer(deviceContext.Get(), screenWidth, screenHeight);
+    deviceContext->DrawIndexed(6, 0, 0);
+
+    // RENDER TO SCREEN
+
     setBackbufferAsRenderTargetAndClear();
     
-    turnZBufferOff();
-    
-    fullscreenPostProcessingDisplay.setDisplayGeometryBuffersForIA(deviceContext.Get());
-    
     textureShader.setActive(deviceContext.Get());
-    
-    D3DXMATRIX identitityMatrix;
-    D3DXMatrixIdentity(&identitityMatrix);
     textureShader.updateTransformationMatricesBuffer(deviceContext.Get(),
-                                                     identitityMatrix,
+                                                     identityMatrix,
                                                      postProcessingDisplayViewMatrix,
-                                                     ortographicMatrix);
-    textureShader.updateTexture(deviceContext.Get(), postProcessingTexture.getTextureResource());
+                                                     orthographicMatrix);
+    textureShader.updateTexture(deviceContext.Get(), convolutionTexture.getTextureResource());
     deviceContext->DrawIndexed(6, 0, 0);
     
     turnZBufferOn();
@@ -674,9 +690,9 @@ void D3D11Renderer::setBackbufferAsRenderTargetAndClear() {
     deviceContext->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
-void D3D11Renderer::setPostProcessingTextureAsRenderTargetAndClear() {
-    postProcessingTexture.setAsRenderTarget(deviceContext.Get(), depthStencilView.Get());
-    postProcessingTexture.clearRenderTarget(deviceContext.Get(), depthStencilView.Get());
+void D3D11Renderer::setTextureAsRenderTargetAndClear(RenderTargetTexture* renderTargetTexture) {
+    renderTargetTexture->setAsRenderTarget(deviceContext.Get(), depthStencilView.Get());
+    renderTargetTexture->clearRenderTarget(deviceContext.Get(), depthStencilView.Get());
 }
 
 void D3D11Renderer::setSceneGeometryBuffersForIA() {

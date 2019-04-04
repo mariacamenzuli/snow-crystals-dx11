@@ -21,6 +21,7 @@
 #include "RenderTargetTexture.h"
 #include "../FullscreenPostProcessingDisplay.h"
 #include "Shaders/TextureShader.h"
+#include "Shaders/ConvolutionShader.h"
 
 class D3D11Renderer {
 public:
@@ -87,14 +88,19 @@ private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> sceneInstanceBuffer;
 
     D3DXMATRIX projectionMatrix;
-    D3DXMATRIX ortographicMatrix;
+    D3DXMATRIX orthographicMatrix;
+
     LightShader lightShader;
     DepthShader depthShader;
     TextureShader textureShader;
+    ConvolutionShader convolutionShader;
+
     RenderTargetTextureCube shadowMap;
-    RenderTargetTexture postProcessingTexture;
+    RenderTargetTexture postProcessingStartTexture;
+    RenderTargetTexture convolutionTexture;
     FullscreenPostProcessingDisplay fullscreenPostProcessingDisplay;
     D3DXMATRIX postProcessingDisplayViewMatrix;
+    D3DXMATRIX identityMatrix;
 
     PhysicalDeviceDescriptor queryPhysicalDeviceDescriptors();
     void createSwapChainAndDevice(HWND windowHandle);
@@ -105,7 +111,7 @@ private:
     void updateInstanceBuffer(std::vector<Model::Instance>* instances);
     void renderShadowMap(D3DXMATRIX* pointLightProjectionMatrix);
     void setBackbufferAsRenderTargetAndClear();
-    void setPostProcessingTextureAsRenderTargetAndClear();
+    void setTextureAsRenderTargetAndClear(RenderTargetTexture* renderTargetTexture);
     void setSceneGeometryBuffersForIA();
     void turnZBufferOn();
     void turnZBufferOff();

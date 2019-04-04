@@ -116,6 +116,9 @@
     <ClCompile Include="Rendering\Shaders\TextureShader.cpp">
       <Filter>Source Files\Rendering\Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\Shaders\ConvolutionShader.cpp">
+      <Filter>Source Files\Rendering\Shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationConfig.h">
@@ -187,6 +190,9 @@
     <ClInclude Include="Rendering\Shaders\TextureShader.h">
       <Filter>Header Files\Rendering\Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Shaders\ConvolutionShader.h">
+      <Filter>Header Files\Rendering\Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Rendering\Shaders\depth-pixel.hlsl">
@@ -201,8 +207,18 @@
     <FxCompile Include="Rendering\Shaders\light-vertex.hlsl">
       <Filter>Shader Files</Filter>
     </FxCompile>
-    <FxCompile Include="Rendering\Shaders\texture-vertex.hlsl" />
-    <FxCompile Include="Rendering\Shaders\texture-pixel.hlsl" />
+    <FxCompile Include="Rendering\Shaders\convolution-pixel.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Rendering\Shaders\convolution-vertex.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Rendering\Shaders\texture-pixel.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Rendering\Shaders\texture-vertex.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="config.yml">
