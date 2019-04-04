@@ -193,7 +193,12 @@ void D3D11Renderer::renderFrame() {
                                                          postProcessingDisplayViewMatrix,
                                                          orthographicMatrix);
     convolutionShader.updateTexture(deviceContext.Get(), postProcessingStartTexture.getTextureResource());
-    convolutionShader.updateScreenSizeBuffer(deviceContext.Get(), screenWidth, screenHeight);
+    convolutionShader.updateConvolutionBuffer(deviceContext.Get(),
+                                              convolutionShader.embossKernelMatrix,
+                                              screenWidth,
+                                              screenHeight,
+                                              convolutionShader.embossDenominator,
+                                              convolutionShader.embossOffset);
     deviceContext->DrawIndexed(6, 0, 0);
 
     // RENDER TO SCREEN

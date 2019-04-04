@@ -2,6 +2,89 @@
 #include "../../Util/FileReader.h"
 
 ConvolutionShader::ConvolutionShader() {
+    // EMBOSS
+    embossKernelMatrix._11 = 2.0f;
+    embossKernelMatrix._12 = 0.0f;
+    embossKernelMatrix._13 = 0.0f;
+    embossKernelMatrix._14 = 0.0f;
+
+    embossKernelMatrix._21 = 0.0f;
+    embossKernelMatrix._22 = -1.0f;
+    embossKernelMatrix._23 = 0.0f;
+    embossKernelMatrix._24 = 0.0f;
+
+    embossKernelMatrix._31 = 0.0f;
+    embossKernelMatrix._32 = 0.0f;
+    embossKernelMatrix._33 = -1.0f;
+    embossKernelMatrix._34 = 0.0f;
+
+    embossKernelMatrix._41 = 0.0f;
+    embossKernelMatrix._42 = 0.0f;
+    embossKernelMatrix._43 = 0.0f;
+    embossKernelMatrix._44 = 1.0f;
+
+    // BLUR
+    blurKernelMatrix._11 = 1.0f;
+    blurKernelMatrix._12 = 2.0f;
+    blurKernelMatrix._13 = 1.0f;
+    blurKernelMatrix._14 = 0.0f;
+
+    blurKernelMatrix._21 = 2.0f;
+    blurKernelMatrix._22 = 4.0f;
+    blurKernelMatrix._23 = 2.0f;
+    blurKernelMatrix._24 = 0.0f;
+
+    blurKernelMatrix._31 = 1.0f;
+    blurKernelMatrix._32 = 2.0f;
+    blurKernelMatrix._33 = 1.0f;
+    blurKernelMatrix._34 = 0.0f;
+
+    blurKernelMatrix._41 = 0.0f;
+    blurKernelMatrix._42 = 0.0f;
+    blurKernelMatrix._43 = 0.0f;
+    blurKernelMatrix._44 = 0.0f;
+
+    // SHARPNESS
+    sharpnessKernelMatrix._11 = -1.0f;
+    sharpnessKernelMatrix._12 = -1.0f;
+    sharpnessKernelMatrix._13 = -1.0f;
+    sharpnessKernelMatrix._14 = 0.0f;
+
+    sharpnessKernelMatrix._21 = -1.0f;
+    sharpnessKernelMatrix._22 = 9.0f;
+    sharpnessKernelMatrix._23 = -1.0f;
+    sharpnessKernelMatrix._24 = 0.0f;
+
+    sharpnessKernelMatrix._31 = -1.0f;
+    sharpnessKernelMatrix._32 = -1.0f;
+    sharpnessKernelMatrix._33 = -1.0f;
+    sharpnessKernelMatrix._34 = 0.0f;
+
+    sharpnessKernelMatrix._41 = 0.0f;
+    sharpnessKernelMatrix._42 = 0.0f;
+    sharpnessKernelMatrix._43 = 0.0f;
+    sharpnessKernelMatrix._44 = 0.0f;
+
+    // EDGE DETECTION
+    edgeDetectionKernelMatrix._11 = -1.0f / 8.0f;
+    edgeDetectionKernelMatrix._12 = -1.0f / 8.0f;
+    edgeDetectionKernelMatrix._13 = -1.0f / 8.0f;
+    edgeDetectionKernelMatrix._14 = 0.0f;
+
+    edgeDetectionKernelMatrix._21 = -1.0f / 8.0f;
+    edgeDetectionKernelMatrix._22 = 1.0f;
+    edgeDetectionKernelMatrix._23 = -1.0f / 8.0f;
+    edgeDetectionKernelMatrix._24 = 0.0f;
+
+    edgeDetectionKernelMatrix._31 = -1.0f / 8.0f;
+    edgeDetectionKernelMatrix._32 = -1.0f / 8.0f;
+    edgeDetectionKernelMatrix._33 = -1.0f / 8.0f;
+    edgeDetectionKernelMatrix._34 = 0.0f;
+
+    edgeDetectionKernelMatrix._41 = 0.0f;
+    edgeDetectionKernelMatrix._42 = 0.0f;
+    edgeDetectionKernelMatrix._43 = 0.0f;
+    edgeDetectionKernelMatrix._44 = 1.0f;
 }
 
 ConvolutionShader::~ConvolutionShader() {
@@ -46,7 +129,14 @@ void ConvolutionShader::updateTransformationMatricesBuffer(ID3D11DeviceContext* 
     deviceContext->VSSetConstantBuffers(0, 1, transformationMatricesBuffer.GetAddressOf());
 }
 
-void ConvolutionShader::updateScreenSizeBuffer(ID3D11DeviceContext* deviceContext, float screenWidth, float screenHeight) {
+void ConvolutionShader::updateConvolutionBuffer(ID3D11DeviceContext* deviceContext,
+                                                D3DXMATRIX kernelMatrix,
+                                                float screenWidth,
+                                                float screenHeight,
+                                                float denominator,
+                                                float offset) {
+    D3DXMatrixTranspose(&kernelMatrix, &kernelMatrix);
+
     D3D11_MAPPED_SUBRESOURCE mappedResource;
 
     HRESULT result = deviceContext->Map(screenSizeBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -54,9 +144,12 @@ void ConvolutionShader::updateScreenSizeBuffer(ID3D11DeviceContext* deviceContex
         throw std::runtime_error("Failed to lock the screen size buffer for the convolution shader input.");
     }
 
-    auto materialData = static_cast<ScreenSizeBuffer*>(mappedResource.pData);
-    materialData->screenWidth = screenWidth;
-    materialData->screenHeight = screenHeight;
+    auto convolutionData = static_cast<ConvolutionBuffer*>(mappedResource.pData);
+    convolutionData->kernelMatrix = kernelMatrix;
+    convolutionData->screenWidth = screenWidth;
+    convolutionData->screenHeight = screenHeight;
+    convolutionData->denominator = denominator;
+    convolutionData->offset = offset;
 
     deviceContext->Unmap(screenSizeBuffer.Get(), 0);
     deviceContext->PSSetConstantBuffers(0, 1, screenSizeBuffer.GetAddressOf());
@@ -146,7 +239,7 @@ void ConvolutionShader::setupPixelShader(ID3D11Device* device) {
 
     D3D11_BUFFER_DESC screenSizeBufferDesc;
     screenSizeBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-    screenSizeBufferDesc.ByteWidth = sizeof(ScreenSizeBuffer);
+    screenSizeBufferDesc.ByteWidth = sizeof(ConvolutionBuffer);
     screenSizeBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     screenSizeBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     screenSizeBufferDesc.MiscFlags = 0;

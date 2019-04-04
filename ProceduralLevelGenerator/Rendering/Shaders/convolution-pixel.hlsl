@@ -1,10 +1,12 @@
 Texture2D shaderTexture;
 SamplerState SampleType;
 
-cbuffer ScreenSizeBuffer {
+cbuffer ConvolutionBuffer {
+    float4x4 kernelMatrix;
     float screenWidth;
     float screenHeight;
-    float2 padding;
+    float denominator;
+    float offset;
 };
 
 struct PixelInputType {
@@ -52,21 +54,9 @@ void getMean(float neighborPixelsRedChannel[9],
 }
 
 float4 main(PixelInputType input) : SV_TARGET {
-    float kerEmboss[9] = { 2.,0.,0.,
-                           0., -1., 0.,
-                           0., 0., -1. };
-
-    float kerSharpness[9] = { -1.,-1.,-1.,
-                              -1., 9., -1.,
-                              -1., -1., -1. };
-
-    float kerGausBlur[9] = { 1.,2.,1.,
-                             2., 4., 2.,
-                             1., 2., 1. };
-
-    float kerEdgeDetect[9] = { -1. / 8.,-1. / 8.,-1. / 8.,
-                               -1. / 8., 1., -1. / 8.,
-                               -1. / 8., -1. / 8., -1. / 8. };
+    float kernel[9] = { kernelMatrix[0][0], kernelMatrix[0][1], kernelMatrix[0][2],
+                        kernelMatrix[1][0], kernelMatrix[1][1], kernelMatrix[1][2],
+                        kernelMatrix[2][0], kernelMatrix[2][1], kernelMatrix[2][2], };
 
     float neighborPixelsRedChannel[9];
     getNeighborPixels(input.tex, 0, neighborPixelsRedChannel);
@@ -82,29 +72,17 @@ float4 main(PixelInputType input) : SV_TARGET {
 
     float4 color = 0;
 
-    // Sharpness kernel
-    //color.x = convolve(kerSharpness, neighborPixelsRedChannel, 1., 0.);
-    //color.y = convolve(kerSharpness, neighborPixelsGreenChannel, 1., 0.);
-    //color.z = convolve(kerSharpness, neighborPixelsBlueChannel, 1., 0.);
-    //color.w = 1;
-
-    // Gaussian blur kernel
-    //color.x = convolve(kerGausBlur, neighborPixelsRedChannel, 16., 0.);
-    //color.y = convolve(kerGausBlur, neighborPixelsGreenChannel, 16., 0.);
-    //color.z = convolve(kerGausBlur, neighborPixelsBlueChannel, 16., 0.);
-    //color.w = 1;
-
-    // Edge Detection kernel
-    //color.x = convolve(kerEdgeDetect, neighborPixelsAverage, 0.1, 0.);
-    //color.y = convolve(kerEdgeDetect, neighborPixelsAverage, 0.1, 0.);
-    //color.z = convolve(kerEdgeDetect, neighborPixelsAverage, 0.1, 0.);
-    //color.w = 1;
-
-    // Emboss kernel
-    color.x = convolve(kerEmboss, neighborPixelsAverage, 1., 1. / 2.);
-    color.y = convolve(kerEmboss, neighborPixelsAverage, 1., 1. / 2.);
-    color.z = convolve(kerEmboss, neighborPixelsAverage, 1., 1. / 2.);
-    color.w = 1;
+    if (kernelMatrix[3][3] > 0) {
+        color.x = convolve(kernel, neighborPixelsAverage, denominator, offset);
+        color.y = convolve(kernel, neighborPixelsAverage, denominator, offset);
+        color.z = convolve(kernel, neighborPixelsAverage, denominator, offset);
+        color.w = 1;
+    } else {
+        color.x = convolve(kernel, neighborPixelsRedChannel, denominator, offset);
+        color.y = convolve(kernel, neighborPixelsGreenChannel, denominator, offset);
+        color.z = convolve(kernel, neighborPixelsBlueChannel, denominator, offset);
+        color.w = 1;
+    }
 
     return color;
 }

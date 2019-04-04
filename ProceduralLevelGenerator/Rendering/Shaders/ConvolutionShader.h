@@ -9,6 +9,22 @@ public:
     ConvolutionShader();
     ~ConvolutionShader();
 
+    float embossDenominator = 1.0f;
+    float embossOffset = 0.5f;
+    D3DXMATRIX embossKernelMatrix;
+
+    float sharpnessDenominator = 1.0f;
+    float sharpnessOffset = 0.0f;
+    D3DXMATRIX sharpnessKernelMatrix;
+
+    float edgeDetectionDenominator = 0.1f;
+    float edgeDetectionOffset = 0.0f;
+    D3DXMATRIX edgeDetectionKernelMatrix;
+
+    float blurDenominator = 16.0f;
+    float blurOffset = 0.0f;
+    D3DXMATRIX blurKernelMatrix;
+
     void initialize(ID3D11Device* device);
     void setActive(ID3D11DeviceContext* deviceContext);
     void updateTexture(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** texture);
@@ -16,9 +32,12 @@ public:
                                             D3DXMATRIX worldMatrix,
                                             D3DXMATRIX viewMatrix,
                                             D3DXMATRIX projectionMatrix);
-    void updateScreenSizeBuffer(ID3D11DeviceContext* deviceContext,
-                                float screenWidth,
-                                float screenHeight);
+    void updateConvolutionBuffer(ID3D11DeviceContext* deviceContext,
+                                 D3DXMATRIX kernelMatrix,
+                                 float screenWidth,
+                                 float screenHeight,
+                                 float denominator,
+                                 float offset);;
 
 private:
     struct TransformationMatricesBuffer {
@@ -27,11 +46,12 @@ private:
         D3DXMATRIX projectionMatrix;
     };
     
-    struct ScreenSizeBuffer {
+    struct ConvolutionBuffer {
+        D3DXMATRIX kernelMatrix;
         float screenWidth;
         float screenHeight;
-        float padding0;
-        float padding1;
+        float denominator;
+        float offset;
     };
 
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;
