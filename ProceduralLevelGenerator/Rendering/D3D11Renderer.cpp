@@ -58,7 +58,8 @@ D3D11Renderer::D3D11Renderer(HWND windowHandle,
 
     shadowMap.initialize(device.Get(), shadowMapSize);
     postProcessingStartTexture.initialize(device.Get(), screenWidth, screenHeight);
-    convolutionTexture.initialize(device.Get(), screenWidth, screenHeight);
+    convolutionTexture1.initialize(device.Get(), screenWidth, screenHeight);
+    convolutionTexture2.initialize(device.Get(), screenWidth, screenHeight);
     fullscreenPostProcessingDisplay.initialize(device.Get(), screenWidth, screenHeight);
 
     createPostProcessingViewMatrix();
@@ -186,19 +187,34 @@ void D3D11Renderer::renderFrame() {
 
     // CONVOLUTION
 
-    setTextureAsRenderTargetAndClear(&convolutionTexture);
     convolutionShader.setActive(deviceContext.Get());
     convolutionShader.updateTransformationMatricesBuffer(deviceContext.Get(),
                                                          identityMatrix,
                                                          postProcessingDisplayViewMatrix,
                                                          orthographicMatrix);
+
+    // CONVOLUTION 1
+
+    setTextureAsRenderTargetAndClear(&convolutionTexture1);
     convolutionShader.updateTexture(deviceContext.Get(), postProcessingStartTexture.getTextureResource());
     convolutionShader.updateConvolutionBuffer(deviceContext.Get(),
-                                              convolutionShader.embossKernelMatrix,
+                                              convolutionShader.blurKernelMatrix,
                                               screenWidth,
                                               screenHeight,
-                                              convolutionShader.embossDenominator,
-                                              convolutionShader.embossOffset);
+                                              convolutionShader.blurDenominator,
+                                              convolutionShader.blurOffset);
+    deviceContext->DrawIndexed(6, 0, 0);
+
+    // CONVOLUTION 2
+
+    setTextureAsRenderTargetAndClear(&convolutionTexture2);
+    convolutionShader.updateTexture(deviceContext.Get(), convolutionTexture1.getTextureResource());
+    convolutionShader.updateConvolutionBuffer(deviceContext.Get(),
+                                              convolutionShader.edgeDetectionKernelMatrix,
+                                              screenWidth,
+                                              screenHeight,
+                                              convolutionShader.edgeDetectionDenominator,
+                                              convolutionShader.edgeDetectionOffset);
     deviceContext->DrawIndexed(6, 0, 0);
 
     // RENDER TO SCREEN
@@ -210,7 +226,7 @@ void D3D11Renderer::renderFrame() {
                                                      identityMatrix,
                                                      postProcessingDisplayViewMatrix,
                                                      orthographicMatrix);
-    textureShader.updateTexture(deviceContext.Get(), convolutionTexture.getTextureResource());
+    textureShader.updateTexture(deviceContext.Get(), convolutionTexture2.getTextureResource());
     deviceContext->DrawIndexed(6, 0, 0);
     
     turnZBufferOn();

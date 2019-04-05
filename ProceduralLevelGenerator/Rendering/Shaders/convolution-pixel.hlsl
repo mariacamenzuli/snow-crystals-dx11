@@ -6,7 +6,7 @@ cbuffer ConvolutionBuffer {
     float screenWidth;
     float screenHeight;
     float denominator;
-    float offset;
+    float offset; // color added to all points after kernel is applied
 };
 
 struct PixelInputType {

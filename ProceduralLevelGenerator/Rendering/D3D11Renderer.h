@@ -97,7 +97,8 @@ private:
 
     RenderTargetTextureCube shadowMap;
     RenderTargetTexture postProcessingStartTexture;
-    RenderTargetTexture convolutionTexture;
+    RenderTargetTexture convolutionTexture1;
+    RenderTargetTexture convolutionTexture2;
     FullscreenPostProcessingDisplay fullscreenPostProcessingDisplay;
     D3DXMATRIX postProcessingDisplayViewMatrix;
     D3DXMATRIX identityMatrix;
