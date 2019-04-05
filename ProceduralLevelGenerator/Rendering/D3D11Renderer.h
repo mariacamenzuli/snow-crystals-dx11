@@ -36,9 +36,13 @@ public:
                   const int instanceBufferSize);
     ~D3D11Renderer();
 
+    enum class Convolution {
+        GAUSSIAN_BLUR, EDGE_DETECTION, EMBOSS, SHARPEN
+    };
+
     void setScene(Scene* scene);
     void setCamera(Camera* camera);
-    void renderFrame();
+    void renderFrame(std::vector<Convolution> convolutions);
     ID3D11Device* getDevice();
     void writeCurrentShadowMapToDds();
 

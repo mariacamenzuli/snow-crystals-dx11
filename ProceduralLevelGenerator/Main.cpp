@@ -180,7 +180,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
             }
 
             if (shouldRender) {
-                d3D11Renderer.renderFrame();
+                d3D11Renderer.renderFrame(config.getConvolutions());
                 metricsTracker.newFrameRendered();
             }
 

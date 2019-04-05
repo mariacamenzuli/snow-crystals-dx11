@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <vector>
+#include "Rendering/D3D11Renderer.h"
 
 class ApplicationConfig {
 public:
@@ -18,6 +20,8 @@ public:
     float getBeta();
     float getGamma();
 
+    std::vector<D3D11Renderer::Convolution> getConvolutions();
+
 private:
     bool fullscreenEnabled = false;
     bool vsyncEnabled = true;
@@ -30,6 +34,8 @@ private:
     float alpha = 1.0f;
     float beta = 0.4f;
     float gamma = 0.000005f;
+
+    std::vector<D3D11Renderer::Convolution> convolutions;
 
     bool readBoolean(const std::string& property);
 };

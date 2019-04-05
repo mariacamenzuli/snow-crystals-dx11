@@ -1,4 +1,6 @@
+#  -----------------
 #  --- RENDERING ---
+#  -----------------
 
 # if false, an 800 x 600 window will be used
 fullscreen_enabled: false
@@ -10,21 +12,16 @@ screen_near: 0.1
 
 shadowmap_size: 1080
 
+#  ------------------------------
 #  --- SNOW CRYSTAL GENERATOR ---
+#  ------------------------------
 
 hexagon_lattice_width: 200
 hexagon_lattice_height: 200
 
-# increase this to slow the automton down if it is growing too quickly
-automaton_step_every_nth_frame: 1
-
-# alpha is the weighting factor
-# beta is the background level
-# gamma is the growth constant
-
-alpha: 1.0
-beta: 0.4
-gamma: 0.000005
+alpha: 1.0 # alpha is the weighting factor
+beta: 0.4 # beta is the background level
+gamma: 0.000005 # gamma is the growth constant
 
 # alpha: 1.0
 # beta: 0.3
@@ -37,3 +34,10 @@ gamma: 0.000005
 # alpha: 1.0
 # beta: 0.9
 # gamma: 0.05
+
+#  -----------------------
+#  --- POST PROCESSING ---
+#  -----------------------
+
+# options: GAUSSIAN_BLUR, EDGE_DETECTION, EMBOSS, SHARPEN
+convolutions: "GAUSSIAN_BLUR, EDGE_DETECTION, SHARPEN"

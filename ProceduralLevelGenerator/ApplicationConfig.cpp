@@ -6,6 +6,7 @@
 
 ApplicationConfig::ApplicationConfig() {
     const std::regex regexConfigLine(R"((.+): (.+))");
+    const std::regex regexEnumName("([_A-Z]+)");
 
     std::ifstream inputStream;
 
@@ -75,6 +76,23 @@ ApplicationConfig::ApplicationConfig() {
                 gamma = std::stof(value);
                 continue;
             }
+
+            if (key == "convolutions") {
+                std::string convolutionToParse = value.str();
+                while (std::regex_search(convolutionToParse, regexMatches, regexEnumName)) {
+                    std::string convolutionName = regexMatches[0].str();
+                    if (convolutionName == "EDGE_DETECTION") {
+                        convolutions.push_back(D3D11Renderer::Convolution::EDGE_DETECTION);
+                    } else if (convolutionName == "GAUSSIAN_BLUR") {
+                        convolutions.push_back(D3D11Renderer::Convolution::GAUSSIAN_BLUR);
+                    } else if (convolutionName == "EMBOSS") {
+                        convolutions.push_back(D3D11Renderer::Convolution::EMBOSS);
+                    } else if (convolutionName == "SHARPEN") {
+                        convolutions.push_back(D3D11Renderer::Convolution::SHARPEN);
+                    }
+                    convolutionToParse = regexMatches.suffix();
+                }
+            }
         }
     }
 }
@@ -119,6 +137,10 @@ float ApplicationConfig::getBeta() {
 
 float ApplicationConfig::getGamma() {
     return gamma;
+}
+
+std::vector<D3D11Renderer::Convolution> ApplicationConfig::getConvolutions() {
+    return convolutions;
 }
 
 bool ApplicationConfig::readBoolean(const std::string& property) {
