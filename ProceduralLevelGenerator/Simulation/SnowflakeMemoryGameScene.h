@@ -25,6 +25,7 @@ public:
     void startGame();
     void inputRightTurn();
     void inputLeftTurn();
+    bool isShowingSequenceToMemorize();
 
 private:
     struct SnowflakeAutomatonCell {
@@ -45,9 +46,14 @@ private:
         }
     };
 
+    struct SnowflakeTurnDisplay {
+        boolean isLeftTurn;
+        boolean isPlayerInput;
+    };
+
     struct Game {
         int sequenceLength = 2;
-        std::queue<boolean> sequenceToDisplay;
+        std::queue<SnowflakeTurnDisplay> sequenceToDisplay;
         std::queue<boolean> sequenceInputExpected;
     };
 
@@ -86,13 +92,13 @@ private:
     PointLight pointLight;
 
     Model* snowflakeModel;
-    // SnowflakeAutomatonCell** cells;
     std::vector<SnowflakeAutomatonCell*> iceCells;
     std::vector<SnowflakeAutomatonCell*> boundaryCells;
 
     int updateCount = 0;
 
     float angleTurned = 0;
+    SnowflakeTurnDisplay currentTurnDisplay;
 
     bool progressSimulation = false;
 

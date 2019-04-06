@@ -161,6 +161,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
         const float timePerFrame = 1.0f / 60.0f;
         int fpsLogTracker = 0;
 
+        std::vector<D3D11Renderer::Convolution> noConvolutions;
         MSG msg = {};
         while (msg.message != WM_QUIT) {
             if (fpsLogTracker % 150 == 0) {
@@ -180,7 +181,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
             }
 
             if (shouldRender) {
-                d3D11Renderer.renderFrame(config.getConvolutions());
+                if (scene.isShowingSequenceToMemorize()) {
+                    d3D11Renderer.renderFrame(config.getConvolutions());
+                } else {
+                    d3D11Renderer.renderFrame(noConvolutions);
+                }
                 metricsTracker.newFrameRendered();
             }
 

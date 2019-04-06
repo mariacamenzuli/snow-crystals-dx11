@@ -61,9 +61,10 @@ void SnowflakeMemoryGameScene::update(float deltaTime) {
             OutputDebugString(L"Accepting sequence input...\n");
             gameState = GameState::ACCEPTING_SEQUENCE;
         } else if (!game.sequenceToDisplay.empty()) {
-            auto isTurnLeft = game.sequenceToDisplay.front();
+            auto snowflakeTurnDisplay = game.sequenceToDisplay.front();
             game.sequenceToDisplay.pop();
-            if (isTurnLeft) {
+            currentTurnDisplay = snowflakeTurnDisplay;
+            if (currentTurnDisplay.isLeftTurn) {
                 turnSnowflakeLeft();
             } else {
                 turnSnowflakeRight();
@@ -119,7 +120,7 @@ void SnowflakeMemoryGameScene::inputRightTurn() {
 
         int sequenceLengthIncrement = 0;
         if (expectingTurnRight) {
-            game.sequenceToDisplay.push(false);
+            game.sequenceToDisplay.push({ false, true });
             sequenceLengthIncrement = 1;
         } else {
             while (!game.sequenceInputExpected.empty()) {
@@ -141,7 +142,7 @@ void SnowflakeMemoryGameScene::inputLeftTurn() {
 
         int sequenceLengthIncrement = 0;
         if (expectingTurnLeft) {
-            game.sequenceToDisplay.push(true);
+            game.sequenceToDisplay.push({ true, true });
             sequenceLengthIncrement = 1;
         } else {
             while (!game.sequenceInputExpected.empty()) {
@@ -154,6 +155,10 @@ void SnowflakeMemoryGameScene::inputLeftTurn() {
             generateTurnSequence();
         }
     }
+}
+
+bool SnowflakeMemoryGameScene::isShowingSequenceToMemorize() {
+    return gameState == GameState::SHOWING_SEQUENCE && !currentTurnDisplay.isPlayerInput;
 }
 
 D3DXVECTOR3 SnowflakeMemoryGameScene::calculateCellInstancePosition(int x, int y) {
@@ -234,7 +239,7 @@ void SnowflakeMemoryGameScene::generateTurnSequence() {
     OutputDebugString(L"Generating new turn sequence...\n");
     for (int i = 0; i < game.sequenceLength; i++) {
         const auto turnLeft = rand() % 2 == 0;
-        game.sequenceToDisplay.push(turnLeft);
+        game.sequenceToDisplay.push({ turnLeft, false });
         game.sequenceInputExpected.push(turnLeft);
     }
     gameState = GameState::SHOWING_SEQUENCE;
