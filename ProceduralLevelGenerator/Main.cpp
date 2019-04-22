@@ -109,8 +109,8 @@ void readUserInput(UserInputReader& userInput,
     int mouseChangeY;
     userInput.getMouseLocationChange(mouseChangeX, mouseChangeY);
 
-    camera.yaw(mouseChangeX * 0.15f * deltaTime);
-    camera.pitch(mouseChangeY * 0.15f * deltaTime);
+    camera.yaw(mouseChangeX * 0.05f * deltaTime);
+    camera.pitch(mouseChangeY * 0.05f * deltaTime);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow) {
