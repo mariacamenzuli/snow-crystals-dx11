@@ -11,7 +11,6 @@ public:
     ~ModelLoader();
 
     enum class ModelId {
-        CUBE,
         HEXAGON
     };
 

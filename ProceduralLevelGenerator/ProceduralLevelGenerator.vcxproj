@@ -94,7 +94,6 @@
     <ClCompile Include="Rendering\Shaders\ConvolutionShader.cpp" />
     <ClCompile Include="FullscreenPostProcessingDisplay.cpp" />
     <ClCompile Include="Rendering\Camera.cpp" />
-    <ClCompile Include="3D Components\Models\CubeModel.cpp" />
     <ClCompile Include="Rendering\D3D11Renderer.cpp" />
     <ClCompile Include="Rendering\Shaders\DepthShader.cpp" />
     <ClCompile Include="Rendering\RenderTargetTexture.cpp" />
@@ -118,7 +117,6 @@
     <ClInclude Include="Rendering\Shaders\ConvolutionShader.h" />
     <ClInclude Include="FullscreenPostProcessingDisplay.h" />
     <ClInclude Include="Rendering\Camera.h" />
-    <ClInclude Include="3D Components\Models\CubeModel.h" />
     <ClInclude Include="Rendering\D3D11Renderer.h" />
     <ClInclude Include="Rendering\Shaders\DepthShader.h" />
     <ClInclude Include="Rendering\RenderTargetTexture.h" />

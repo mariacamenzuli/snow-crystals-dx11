@@ -68,9 +68,6 @@
     <ClCompile Include="3D Components\SceneObject.cpp">
       <Filter>Source Files\3D Components</Filter>
     </ClCompile>
-    <ClCompile Include="3D Components\Models\CubeModel.cpp">
-      <Filter>Source Files\3D Components\Models</Filter>
-    </ClCompile>
     <ClCompile Include="3D Components\Models\ObjModel.cpp">
       <Filter>Source Files\3D Components\Models</Filter>
     </ClCompile>
@@ -135,9 +132,6 @@
     </ClInclude>
     <ClInclude Include="3D Components\SceneObject.h">
       <Filter>Header Files\3D Components</Filter>
-    </ClInclude>
-    <ClInclude Include="3D Components\Models\CubeModel.h">
-      <Filter>Header Files\3D Components\Models</Filter>
     </ClInclude>
     <ClInclude Include="3D Components\Models\Model.h">
       <Filter>Header Files\3D Components\Models</Filter>
