@@ -12,7 +12,6 @@ public:
 
     enum class ModelId {
         CUBE,
-        PROCEDURAL_TERRAIN,
         HEXAGON
     };
 

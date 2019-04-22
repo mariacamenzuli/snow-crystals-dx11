@@ -62,7 +62,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y "$(ProjectDir)config.yml"  "$(OutDir)"</Command>
+      <Command>xcopy /Y "$(ProjectDir)config.yml"  "$(OutDir)" &amp; xcopy /Y /E "$(ProjectDir)Resources"  "$(OutDir)Resources"</Command>
     </PostBuildEvent>
     <FxCompile>
       <ObjectFileOutput>$(OutDir)Resources/Shaders/%(Filename).cso</ObjectFileOutput>
