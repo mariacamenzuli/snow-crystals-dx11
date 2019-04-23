@@ -4,16 +4,15 @@
 #include "ModelLoader.h"
 #include "../Util/UserInputReader.h"
 #include <queue>
-#include <thread>
 
-class SnowflakeMemoryGameScene : public Scene {
+class SnowCrystalMemoryGameScene : public Scene {
 public:
-    SnowflakeMemoryGameScene(const int hexagonLatticeWidth,
+    SnowCrystalMemoryGameScene(const int hexagonLatticeWidth,
                              const int hexagonLatticeHeight,
                              const float alpha,
                              const float beta,
                              const float gamma);
-    ~SnowflakeMemoryGameScene();
+    ~SnowCrystalMemoryGameScene();
 
     SceneObject* getRootSceneObject() override;
     D3DXVECTOR4 getAmbientLight() override;

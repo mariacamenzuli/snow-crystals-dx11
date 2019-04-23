@@ -2,8 +2,7 @@
 
 #include <wrl/client.h>
 #include <D3D11.h>
-
-#include "3D Components/Models/Model.h"
+#include <D3DX10.h>
 
 class FullscreenPostProcessingDisplay {
 public:

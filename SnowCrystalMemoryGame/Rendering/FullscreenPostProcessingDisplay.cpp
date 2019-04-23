@@ -1,4 +1,5 @@
 #include "FullscreenPostProcessingDisplay.h"
+#include <stdexcept>
 
 FullscreenPostProcessingDisplay::FullscreenPostProcessingDisplay() {
 }

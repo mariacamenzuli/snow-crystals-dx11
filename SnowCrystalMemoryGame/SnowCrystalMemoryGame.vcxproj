@@ -15,7 +15,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Engine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
-    <ProjectName>ProceduralLevelGenerator</ProjectName>
+    <ProjectName>SnowCrystalMemoryGame</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -92,12 +92,12 @@
   <ItemGroup>
     <ClCompile Include="ApplicationConfig.cpp" />
     <ClCompile Include="Rendering\Shaders\ConvolutionShader.cpp" />
-    <ClCompile Include="FullscreenPostProcessingDisplay.cpp" />
+    <ClCompile Include="Rendering\FullscreenPostProcessingDisplay.cpp" />
     <ClCompile Include="Rendering\Camera.cpp" />
     <ClCompile Include="Rendering\D3D11Renderer.cpp" />
     <ClCompile Include="Rendering\Shaders\DepthShader.cpp" />
     <ClCompile Include="Rendering\RenderTargetTexture.cpp" />
-    <ClCompile Include="Simulation\SnowflakeMemoryGameScene.cpp" />
+    <ClCompile Include="Simulation\SnowCrystalMemoryGameScene.cpp" />
     <ClCompile Include="Rendering\Shaders\LightShader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="3D Components\Material.cpp" />
@@ -115,14 +115,14 @@
   <ItemGroup>
     <ClInclude Include="ApplicationConfig.h" />
     <ClInclude Include="Rendering\Shaders\ConvolutionShader.h" />
-    <ClInclude Include="FullscreenPostProcessingDisplay.h" />
+    <ClInclude Include="Rendering\FullscreenPostProcessingDisplay.h" />
     <ClInclude Include="Rendering\Camera.h" />
     <ClInclude Include="Rendering\D3D11Renderer.h" />
     <ClInclude Include="Rendering\Shaders\DepthShader.h" />
     <ClInclude Include="Rendering\RenderTargetTexture.h" />
     <ClInclude Include="Rendering\Shaders\TextureShader.h" />
     <ClInclude Include="Util\FileReader.h" />
-    <ClInclude Include="Simulation\SnowflakeMemoryGameScene.h" />
+    <ClInclude Include="Simulation\SnowCrystalMemoryGameScene.h" />
     <ClInclude Include="Rendering\Shaders\LightShader.h" />
     <ClInclude Include="3D Components\Material.h" />
     <ClInclude Include="Util\MetricsTracker.h" />

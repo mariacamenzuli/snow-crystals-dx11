@@ -7,7 +7,7 @@
 #include "Util/UserInputReader.h"
 #include "Util/MetricsTracker.h"
 #include "ApplicationConfig.h"
-#include "Simulation/SnowflakeMemoryGameScene.h"
+#include "Simulation/SnowCrystalMemoryGameScene.h"
 
 bool shouldRender = true;
 
@@ -29,7 +29,7 @@ void readUserInput(UserInputReader& userInput,
                    Win32RenderingWindow& renderingWindow,
                    D3D11Renderer& renderer,
                    Camera& camera,
-                   SnowflakeMemoryGameScene& gameScene,
+                   SnowCrystalMemoryGameScene& gameScene,
                    float deltaTime) {
     userInput.read();
 
@@ -140,7 +140,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
                                     config.getShadowMapSize(),
                                     config.getHexagonLatticeHeight() * config.getHexagonLatticeWidth());
 
-        SnowflakeMemoryGameScene scene(config.getHexagonLatticeWidth(),
+        SnowCrystalMemoryGameScene scene(config.getHexagonLatticeWidth(),
                                        config.getHexagonLatticeHeight(),
                                        config.getAlpha(),
                                        config.getBeta(),

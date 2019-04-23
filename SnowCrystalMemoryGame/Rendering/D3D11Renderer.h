@@ -19,9 +19,9 @@
 #include "RenderTargetTextureCube.h"
 #include "Shaders/DepthShader.h"
 #include "RenderTargetTexture.h"
-#include "../FullscreenPostProcessingDisplay.h"
 #include "Shaders/TextureShader.h"
 #include "Shaders/ConvolutionShader.h"
+#include "FullscreenPostProcessingDisplay.h"
 
 class D3D11Renderer {
 public:

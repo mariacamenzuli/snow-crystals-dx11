@@ -101,13 +101,7 @@
     <ClCompile Include="Rendering\Shaders\DepthShader.cpp">
       <Filter>Source Files\Rendering\Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\SnowflakeMemoryGameScene.cpp">
-      <Filter>Source Files\Simulation</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\RenderTargetTexture.cpp">
-      <Filter>Source Files\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="FullscreenPostProcessingDisplay.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Shaders\TextureShader.cpp">
@@ -115,6 +109,12 @@
     </ClCompile>
     <ClCompile Include="Rendering\Shaders\ConvolutionShader.cpp">
       <Filter>Source Files\Rendering\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\FullscreenPostProcessingDisplay.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\SnowCrystalMemoryGameScene.cpp">
+      <Filter>Source Files\Simulation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,13 +172,7 @@
     <ClInclude Include="Rendering\Shaders\DepthShader.h">
       <Filter>Header Files\Rendering\Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\SnowflakeMemoryGameScene.h">
-      <Filter>Header Files\Simulation</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\RenderTargetTexture.h">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="FullscreenPostProcessingDisplay.h">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Shaders\TextureShader.h">
@@ -186,6 +180,12 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shaders\ConvolutionShader.h">
       <Filter>Header Files\Rendering\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\FullscreenPostProcessingDisplay.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\SnowCrystalMemoryGameScene.h">
+      <Filter>Header Files\Simulation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

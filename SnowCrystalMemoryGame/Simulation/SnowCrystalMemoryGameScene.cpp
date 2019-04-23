@@ -1,7 +1,8 @@
-#include "SnowflakeMemoryGameScene.h"
+#include "SnowCrystalMemoryGameScene.h"
 #include <ctime>
+#include <thread>
 
-SnowflakeMemoryGameScene::SnowflakeMemoryGameScene(const int hexagonLatticeWidth,
+SnowCrystalMemoryGameScene::SnowCrystalMemoryGameScene(const int hexagonLatticeWidth,
                                                    const int hexagonLatticeHeight,
                                                    const float alpha,
                                                    const float beta,
@@ -25,13 +26,13 @@ SnowflakeMemoryGameScene::SnowflakeMemoryGameScene(const int hexagonLatticeWidth
 
     pointLight.translate(0.0f, -12.5f, -50.0f);
 
-    std::thread thread(&SnowflakeMemoryGameScene::snowflakeGeneratorThread, this);
+    std::thread thread(&SnowCrystalMemoryGameScene::snowflakeGeneratorThread, this);
     thread.detach();
 
     srand(time(0));
 }
 
-SnowflakeMemoryGameScene::~SnowflakeMemoryGameScene() {
+SnowCrystalMemoryGameScene::~SnowCrystalMemoryGameScene() {
     gameState = GameState::SHUTTING_DOWN;
 
     while(snowflakeState == SnowflakeState::GROWING) {
@@ -39,19 +40,19 @@ SnowflakeMemoryGameScene::~SnowflakeMemoryGameScene() {
     }
 };
 
-SceneObject* SnowflakeMemoryGameScene::getRootSceneObject() {
+SceneObject* SnowCrystalMemoryGameScene::getRootSceneObject() {
     return rootSceneObject.get();
 }
 
-D3DXVECTOR4 SnowflakeMemoryGameScene::getAmbientLight() {
+D3DXVECTOR4 SnowCrystalMemoryGameScene::getAmbientLight() {
     return D3DXVECTOR4(0.3f, 0.3f, 0.3f, 1.0f);
 }
 
-PointLight* SnowflakeMemoryGameScene::getPointLight() {
+PointLight* SnowCrystalMemoryGameScene::getPointLight() {
     return &pointLight;
 }
 
-void SnowflakeMemoryGameScene::update(float deltaTime) {
+void SnowCrystalMemoryGameScene::update(float deltaTime) {
     switch (snowflakeState) {
     case SnowflakeState::GROWING:
         progressSimulation = true;
@@ -97,15 +98,15 @@ void SnowflakeMemoryGameScene::update(float deltaTime) {
     }
 }
 
-void SnowflakeMemoryGameScene::incrementAlpha(float increment) {
+void SnowCrystalMemoryGameScene::incrementAlpha(float increment) {
     alpha = fmax(0, alpha + increment);
 }
 
-void SnowflakeMemoryGameScene::incrementGamma(float increment) {
+void SnowCrystalMemoryGameScene::incrementGamma(float increment) {
     gamma = fmax(0, gamma + increment);
 }
 
-void SnowflakeMemoryGameScene::startGame() {
+void SnowCrystalMemoryGameScene::startGame() {
     if (gameState == GameState::INIT) {
         OutputDebugString(L"Starting game...\n");
         snowflakeState = SnowflakeState::IDLE;
@@ -113,7 +114,7 @@ void SnowflakeMemoryGameScene::startGame() {
     }
 }
 
-void SnowflakeMemoryGameScene::inputRightTurn() {
+void SnowCrystalMemoryGameScene::inputRightTurn() {
     if (gameState == GameState::ACCEPTING_SEQUENCE && snowflakeState == SnowflakeState::IDLE && !game.sequenceInputExpected.empty()) {
         auto expectingTurnRight = !game.sequenceInputExpected.front();
         game.sequenceInputExpected.pop();
@@ -135,7 +136,7 @@ void SnowflakeMemoryGameScene::inputRightTurn() {
     }
 }
 
-void SnowflakeMemoryGameScene::inputLeftTurn() {
+void SnowCrystalMemoryGameScene::inputLeftTurn() {
     if (gameState == GameState::ACCEPTING_SEQUENCE && snowflakeState == SnowflakeState::IDLE && !game.sequenceInputExpected.empty()) {
         auto expectingTurnLeft = game.sequenceInputExpected.front();
         game.sequenceInputExpected.pop();
@@ -157,17 +158,17 @@ void SnowflakeMemoryGameScene::inputLeftTurn() {
     }
 }
 
-bool SnowflakeMemoryGameScene::isShowingSequenceToMemorize() {
+bool SnowCrystalMemoryGameScene::isShowingSequenceToMemorize() {
     return gameState == GameState::SHOWING_SEQUENCE && !currentTurnDisplay.isPlayerInput;
 }
 
-D3DXVECTOR3 SnowflakeMemoryGameScene::calculateCellInstancePosition(int x, int y) {
+D3DXVECTOR3 SnowCrystalMemoryGameScene::calculateCellInstancePosition(int x, int y) {
     // note that this is in local space
     // also, this is before the hexagons get a 90 degree rotation, so x and y get swapped
     return D3DXVECTOR3(y * 16, x * 18 + (y % 2) * 8.5f, 0.0f);
 }
 
-std::vector<Model::Instance> SnowflakeMemoryGameScene::progressSnowflakeGrowingAutomaton(SnowflakeAutomatonCell** cells) {
+std::vector<Model::Instance> SnowCrystalMemoryGameScene::progressSnowflakeGrowingAutomaton(SnowflakeAutomatonCell** cells) {
     std::vector<Model::Instance> instances;
 
     for (auto iceCell : iceCells) {
@@ -221,21 +222,21 @@ std::vector<Model::Instance> SnowflakeMemoryGameScene::progressSnowflakeGrowingA
     return instances;
 }
 
-void SnowflakeMemoryGameScene::turnSnowflakeRight() {
+void SnowCrystalMemoryGameScene::turnSnowflakeRight() {
     if (snowflakeState == SnowflakeState::IDLE) {
         snowflakeState = SnowflakeState::TURNING_RIGHT;
         angleTurned = 0;
     }
 }
 
-void SnowflakeMemoryGameScene::turnSnowflakeLeft() {
+void SnowCrystalMemoryGameScene::turnSnowflakeLeft() {
     if (snowflakeState == SnowflakeState::IDLE) {
         snowflakeState = SnowflakeState::TURNING_LEFT;
         angleTurned = 0;
     }
 }
 
-void SnowflakeMemoryGameScene::generateTurnSequence() {
+void SnowCrystalMemoryGameScene::generateTurnSequence() {
     OutputDebugString(L"Generating new turn sequence...\n");
     for (int i = 0; i < game.sequenceLength; i++) {
         const auto turnLeft = rand() % 2 == 0;
@@ -245,7 +246,7 @@ void SnowflakeMemoryGameScene::generateTurnSequence() {
     gameState = GameState::SHOWING_SEQUENCE;
 }
 
-void SnowflakeMemoryGameScene::snowflakeGeneratorThread() {
+void SnowCrystalMemoryGameScene::snowflakeGeneratorThread() {
     SnowflakeAutomatonCell** cells = new SnowflakeAutomatonCell*[hexagonLatticeWidth];
     for (int i = 0; i < hexagonLatticeWidth; ++i) {
         cells[i] = new SnowflakeAutomatonCell[hexagonLatticeHeight];
