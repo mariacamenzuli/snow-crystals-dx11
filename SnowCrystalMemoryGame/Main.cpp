@@ -142,7 +142,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 
         // set camera initial position
         camera.moveStraight(-250.0f);
-        camera.moveVertical(-12.5f);
         UserInputReader userInput(hInstance, renderingWindow.getWindowHandle());
 
         renderingWindow.showWindow();
