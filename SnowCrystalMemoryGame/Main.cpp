@@ -9,8 +9,6 @@
 #include "ApplicationConfig.h"
 #include "Simulation/SnowCrystalMemoryGameScene.h"
 
-bool shouldRender = true;
-
 void logErrorAndNotifyUser(const std::string& log, const std::string& userNotification) {
     std::cerr << log << std::endl;
     std::cerr << userNotification << std::endl;
@@ -97,14 +95,6 @@ void readUserInput(UserInputReader& userInput,
         gameScene.incrementAlpha(-1);
     }
 
-    if (userInput.isRPressed()) {
-        shouldRender = false;
-    }
-
-    if (userInput.isTPressed()) {
-        shouldRender = true;
-    }
-
     int mouseChangeX;
     int mouseChangeY;
     userInput.getMouseLocationChange(mouseChangeX, mouseChangeY);
@@ -180,14 +170,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
                 metricsTracker.newSimulationUpdate();
             }
 
-            if (shouldRender) {
-                if (scene.isShowingSequenceToMemorize()) {
-                    d3D11Renderer.renderFrame(config.getConvolutions());
-                } else {
-                    d3D11Renderer.renderFrame(noConvolutions);
-                }
-                metricsTracker.newFrameRendered();
+            if (scene.isShowingSequenceToMemorize()) {
+                d3D11Renderer.renderFrame(config.getConvolutions());
+            } else {
+                d3D11Renderer.renderFrame(noConvolutions);
             }
+            metricsTracker.newFrameRendered();
 
             fpsLogTracker++;
         }
