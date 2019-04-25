@@ -72,7 +72,7 @@ float4 main(PixelInputType input) : SV_TARGET {
 
     float4 color = 0;
 
-    if (kernelMatrix[3][3] > 0) {
+    if (kernelMatrix[3][3] > 0) { // this value indicates whether to decolorize or not
         color.x = convolve(kernel, neighborPixelsAverage, denominator, offset);
         color.y = convolve(kernel, neighborPixelsAverage, denominator, offset);
         color.z = convolve(kernel, neighborPixelsAverage, denominator, offset);

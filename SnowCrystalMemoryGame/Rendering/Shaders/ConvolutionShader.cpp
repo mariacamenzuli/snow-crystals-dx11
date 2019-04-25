@@ -21,7 +21,7 @@ ConvolutionShader::ConvolutionShader() {
     embossKernelMatrix._41 = 0.0f;
     embossKernelMatrix._42 = 0.0f;
     embossKernelMatrix._43 = 0.0f;
-    embossKernelMatrix._44 = 1.0f;
+    embossKernelMatrix._44 = 1.0f; // indicate that image should be decolorized
 
     // BLUR
     blurKernelMatrix._11 = 1.0f;
@@ -42,7 +42,7 @@ ConvolutionShader::ConvolutionShader() {
     blurKernelMatrix._41 = 0.0f;
     blurKernelMatrix._42 = 0.0f;
     blurKernelMatrix._43 = 0.0f;
-    blurKernelMatrix._44 = 0.0f;
+    blurKernelMatrix._44 = 0.0f; // indicate that image should not be decolorized
 
     // SHARPNESS
     sharpnessKernelMatrix._11 = -1.0f;
