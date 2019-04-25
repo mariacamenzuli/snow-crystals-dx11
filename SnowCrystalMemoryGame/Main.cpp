@@ -87,20 +87,12 @@ void readUserInput(UserInputReader& userInput,
         gameScene.incrementGamma(-0.01f);
     }
 
-    if (userInput.isF3Pressed()) {
-        gameScene.incrementAlpha(1);
-    }
-
-    if (userInput.isF4Pressed()) {
-        gameScene.incrementAlpha(-1);
-    }
-
     int mouseChangeX;
     int mouseChangeY;
     userInput.getMouseLocationChange(mouseChangeX, mouseChangeY);
 
-    camera.yaw(mouseChangeX * 0.05f * deltaTime);
-    camera.pitch(mouseChangeY * 0.05f * deltaTime);
+    camera.yaw(mouseChangeX * 0.01f * deltaTime);
+    camera.pitch(mouseChangeY * 0.01f * deltaTime);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow) {
